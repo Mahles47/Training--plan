@@ -1268,22 +1268,20 @@
             <div class="sc-value" id="stat-total">—</div>
             <div class="sc-sub">ساعة في الفترة</div>
         </div>
-        <div class="stat-card" style="position:relative;overflow:hidden;">
-            <div style="position:absolute;top:0;right:0;width:3px;height:100%;background:var(--col-ops);"></div>
-            <div class="sc-label">الساعات النهارية</div>
-            <div class="sc-value" id="stat-day">—</div>
-            <div class="sc-sub">ساعة نهاري</div>
-        </div>
-        <div class="stat-card" style="position:relative;overflow:hidden;">
-            <div style="position:absolute;top:0;right:0;width:3px;height:100%;background:var(--col-exam);"></div>
-            <div class="sc-label">الساعات الليلية</div>
-            <div class="sc-value" id="stat-night">—</div>
-            <div class="sc-sub">ساعة ليلي</div>
-        </div>
         <div class="stat-card orange">
             <div class="sc-label">أيام التدريب الفعلية</div>
             <div class="sc-value" id="stat-training">—</div>
             <div class="sc-sub">يوم عمل</div>
+        </div>
+        <div class="stat-card red">
+            <div class="sc-label">الأيام خارج التدريب</div>
+            <div class="sc-value" id="stat-off">—</div>
+            <div class="sc-sub">إجازات ومهام</div>
+        </div>
+        <div class="stat-card green">
+            <div class="sc-label">الأسابيع</div>
+            <div class="sc-value" id="stat-weeks">—</div>
+            <div class="sc-sub">أسبوع تدريبي</div>
         </div>
     </div>
 
@@ -2247,30 +2245,20 @@
     // ======================== updateStats ========================
     function updateStats() {
         let totalHours = 0;
-        let dayHours = 0;
-        let nightHours = 0;
         let trainingDays = 0;
+        let offDays = 0;
 
         for (const key in calendarData) {
             const day = calendarData[key];
-            // استبعد أيام التمديد (overflow) من الإحصائيات — غير مُحتسبة في جدول الساعات
-            if (day.isOverflow) continue;
-
             totalHours += day.hours;
-            dayHours += day.dayHours;
-            nightHours += day.nightHours;
-
-            if (day.hours > 0) {
-                trainingDays++;
-            }
+            if (day.hours > 0) trainingDays++;
+            if (day.info && day.info.type !== 'prep') offDays++;
         }
 
         document.getElementById('stat-total').textContent = totalHours;
-        document.getElementById('stat-day').textContent = dayHours;
-        document.getElementById('stat-night').textContent = nightHours;
         document.getElementById('stat-training').textContent = trainingDays;
-        // عدّ الأسابيع الفعلية فقط (بدون الاحتياط spare)
-        document.getElementById('stat-weeks').textContent = weekData.filter(w => !w.isSpare).length;
+        document.getElementById('stat-off').textContent = offDays;
+        document.getElementById('stat-weeks').textContent = weekData.length;
     }
 
     // ======================== renderCalendar ========================
@@ -2691,6 +2679,26 @@
             && checkDate.getMonth() === month - 1
             && checkDate.getFullYear() === year;
     }
+
+    function getParadeHours(month) {
+        // يناير-يونيو: فبراير=2, مارس=3, أبريل=4, مايو=5
+        // يوليو-ديسمبر: أغسطس=8, سبتمبر=9, أكتوبر=10, نوفمبر=11
+        const paradeMonths = { 2:3, 3:3, 4:5, 5:7, 8:3, 9:3, 10:5, 11:7 };
+        return paradeMonths[month] || 0;
+    }
+    // تسجيل الـ Service Worker عشان الكروم يشيل علامة المتصفح
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+            .then(reg => console.log('Service Worker Registered!'))
+            .catch(err => console.log('Service Worker Failed', err));
+    });
+}
+
+</script>
+</body>
+</html>
+   }
 
     function getParadeHours(month) {
         // يناير-يونيو: فبراير=2, مارس=3, أبريل=4, مايو=5
