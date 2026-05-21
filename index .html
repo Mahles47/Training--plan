@@ -1,0 +1,2711 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام التخطيط التدريبي</title>
+    <meta name="theme-color" content="#161b22">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎯</text></svg>">
+
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎯</text></svg>">
+
+<link rel="manifest" href="manifest.json">
+
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-card: #1c2128;
+            --bg-hover: #21262d;
+            --border: #30363d;
+            --border-accent: #388bfd;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --text-muted: #6e7681;
+            --accent-blue: #388bfd;
+            --accent-orange: #e67e22;
+            --accent-gold: #f0c040;
+
+            --col-holiday: #c0392b;
+            --col-ops: #27ae60;
+            --col-exam: #d4850a;
+            --col-maint: #636e72;
+            --col-other: #8e44ad;
+            --col-prep: #b8960c;
+            --col-monday: #2471a3;
+            --col-thursday: #d35400;
+            --col-friday: #922b21;
+            --col-long: #1a5276;
+            --col-normal: #1c2128;
+
+            --sidebar-width: 300px;
+            --toolbar-height: 56px;
+        }
+
+        /* Force full width always — sidebar is overlay, not pushes content */
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Cairo', 'Tajawal', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            direction: rtl;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ======= TOP BAR ======= */
+        .topbar {
+            position: fixed;
+            top: 0; right: 0; left: 0;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 12px;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            gap: 8px;
+            height: var(--toolbar-height);
+            flex-wrap: nowrap;
+        }
+
+        .topbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .topbar-brand .brand-icon {
+            width: 32px; height: 32px;
+            background: linear-gradient(135deg, var(--accent-orange), #c0392b);
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .topbar-brand h1 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+
+        /* Desktop: single-row controls */
+        .topbar-controls {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: nowrap;
+            overflow: hidden;
+        }
+
+        .ctrl-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 4px 8px;
+            flex-shrink: 0;
+        }
+
+        .ctrl-group label {
+            font-size: 10px;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        .ctrl-group input, .ctrl-group select {
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-family: 'Cairo', sans-serif;
+            font-size: 12px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .ctrl-group select option {
+            background: var(--bg-card);
+        }
+
+        .topbar-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 11px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-family: 'Cairo', sans-serif;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .topbar-btn:hover { background: var(--bg-hover); border-color: var(--accent-blue); }
+        .topbar-btn.primary { background: var(--accent-blue); border-color: var(--accent-blue); color: white; }
+        .topbar-btn.primary:hover { background: #1f6feb; }
+        .topbar-btn.danger { background: #da3633; border-color: #da3633; color: white; }
+        .topbar-btn.success { background: #238636; border-color: #238636; color: white; }
+        .topbar-btn.sidebar-toggle { background: var(--accent-orange); border-color: var(--accent-orange); color: white; }
+        .topbar-btn.print-btn { background: #21262d; border-color: #6e7681; }
+
+        /* ======= RESPONSIVE TOPBAR — mobile stacks into two rows ======= */
+        @media (max-width: 768px) {
+            :root { --toolbar-height: 100px; }
+
+            .topbar {
+                flex-direction: column;
+                align-items: stretch;
+                justify-content: center;
+                padding: 6px 10px;
+                gap: 5px;
+                height: var(--toolbar-height);
+            }
+
+            /* Row 1: brand + sidebar toggle */
+            .topbar-brand {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                width: 100%;
+            }
+
+            /* Move sidebar-toggle into brand row on mobile via order */
+            .topbar-controls {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                width: 100%;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+            }
+            .topbar-controls::-webkit-scrollbar { display: none; }
+
+            /* Compact ctrl-groups */
+            .ctrl-group {
+                padding: 3px 7px;
+                gap: 4px;
+                flex-shrink: 0;
+            }
+            .ctrl-group label { font-size: 9px; }
+            .ctrl-group input, .ctrl-group select { font-size: 11px; }
+
+            /* Buttons: keep emoji, hide text on very small screens */
+            .topbar-btn {
+                padding: 5px 9px;
+                font-size: 11px;
+                flex-shrink: 0;
+            }
+
+            /* Colour coding for mobile button groups */
+            .topbar-btn.primary  { background: #1d4ed8; border-color: #1d4ed8; }
+            .topbar-btn.print-btn { background: #374151; border-color: #4b5563; }
+            .topbar-btn.success  { background: #166534; border-color: #16a34a; }
+            .topbar-btn.sidebar-toggle { background: #92400e; border-color: var(--accent-orange); }
+
+            /* Hide long brand title, keep icon */
+            .topbar-brand h1 { font-size: 12px; }
+        }
+
+        @media (max-width: 420px) {
+            /* Strip button text, keep emoji only */
+            .topbar-btn .btn-text { display: none; }
+            .topbar-btn { padding: 5px 8px; gap: 0; }
+            .ctrl-group input[type="number"] { width: 44px; }
+        }
+
+        /* ======= SIDEBAR — Off-Canvas Overlay (hidden by default) ======= */
+        .sidebar-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 1100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
+        }
+        .sidebar-backdrop.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: var(--sidebar-width);
+            max-width: 90vw;
+            background: var(--bg-secondary);
+            border-left: 1px solid var(--border);
+            /* Hidden by default — slides in from right */
+            transform: translateX(110%);
+            transition: transform 0.32s cubic-bezier(0.4,0,0.2,1);
+            z-index: 1200;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 0;
+            box-shadow: -12px 0 48px rgba(0,0,0,0.7);
+            will-change: transform;
+        }
+
+        .sidebar.open { transform: translateX(0); }
+
+        .sidebar-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            background: var(--bg-secondary);
+            z-index: 2;
+        }
+
+        .sidebar-top h2 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .sidebar-close {
+            width: 30px; height: 30px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            font-size: 16px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+        }
+        .sidebar-close:hover { background: #da3633; border-color: #da3633; color: white; }
+
+        .sidebar-inner { padding: 16px; }
+
+        .sidebar-section {
+            margin-bottom: 20px;
+        }
+
+        .sidebar-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar-field {
+            margin-bottom: 10px;
+        }
+
+        .sidebar-field label {
+            display: block;
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .sidebar-field input[type="date"],
+        .sidebar-field select {
+            width: 100%;
+            padding: 7px 10px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-family: 'Cairo', sans-serif;
+            font-size: 12px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .sidebar-field input[type="date"]:focus,
+        .sidebar-field select:focus { border-color: var(--accent-blue); }
+
+        .sidebar-field select option { background: var(--bg-card); }
+
+        .sidebar-btn {
+            width: 100%;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-family: 'Cairo', sans-serif;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 6px;
+        }
+
+        .sidebar-btn:hover { background: var(--bg-hover); border-color: var(--accent-blue); }
+        .sidebar-btn.s-success { background: #1a4731; border-color: #238636; }
+        .sidebar-btn.s-danger { background: #3d0f0f; border-color: #da3633; }
+
+        /* Quick actions */
+        .quick-actions { display: flex; flex-direction: column; gap: 6px; }
+
+        .quick-action-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-family: 'Cairo', sans-serif;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quick-action-btn:hover { background: var(--bg-hover); border-color: var(--accent-blue); }
+
+        .quick-action-btn .qa-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* Custom days list */
+        .custom-days-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .custom-day-tag {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 5px 8px;
+            border-radius: 5px;
+            font-size: 11px;
+            color: white;
+        }
+
+        .custom-day-tag button {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            cursor: pointer;
+            width: 18px; height: 18px;
+            border-radius: 3px;
+            font-size: 12px;
+            line-height: 1;
+            transition: background 0.2s;
+        }
+
+        .custom-day-tag button:hover { background: rgba(255,255,255,0.4); }
+
+        .tag-holiday { background: var(--col-holiday); }
+        .tag-ops { background: var(--col-ops); }
+        .tag-exam { background: var(--col-exam); }
+        .tag-maint { background: var(--col-maint); }
+        .tag-other { background: var(--col-other); }
+
+        /* ======= PAINT TOOLBAR ======= */
+        .paint-toolbar {
+            position: fixed;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 950;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            backdrop-filter: blur(20px);
+            /* Mobile: scroll horizontally, never wrap */
+            max-width: calc(100vw - 24px);
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            flex-shrink: 0;
+            flex-wrap: nowrap;
+        }
+
+        .paint-toolbar::-webkit-scrollbar { display: none; }
+
+        .paint-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        .paint-divider {
+            width: 1px;
+            height: 28px;
+            background: var(--border);
+        }
+
+        .paint-tool {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            padding: 6px 10px;
+            border-radius: 10px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: transparent;
+        }
+
+        .paint-tool:hover { background: var(--bg-hover); }
+
+        .paint-tool.active {
+            border-color: white;
+            background: var(--bg-hover);
+        }
+
+        .paint-tool .pt-icon {
+            width: 22px; height: 22px;
+            border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px;
+        }
+
+        .paint-tool .pt-label {
+            font-size: 9px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        .paint-tool.active .pt-label { color: var(--text-primary); }
+
+        .paint-mode-toggle {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 11px;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .paint-mode-toggle.active {
+            background: rgba(56, 139, 253, 0.15);
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
+
+        .paint-mode-toggle .toggle-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            transition: background 0.2s;
+        }
+
+        .paint-mode-toggle.active .toggle-dot { background: var(--accent-blue); }
+
+        /* ======= MAIN CONTENT — always full width, sidebar is overlay ======= */
+        .main-content {
+            margin-top: var(--toolbar-height);
+            padding: 12px;
+            padding-bottom: 120px;
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .main-content { margin-top: var(--toolbar-height); }
+        }
+
+        /* ======= CALENDAR HORIZONTAL SCROLL ======= */
+        .calendar-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch; /* smooth iOS scroll */
+            scroll-behavior: smooth;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 16px;
+            /* Subtle scroll indicator shadow on right edge */
+            background-image: linear-gradient(to right, transparent 85%, rgba(56,139,253,0.07) 100%);
+        }
+
+        /* Scrollbar styling for calendar */
+        .calendar-wrapper::-webkit-scrollbar { height: 5px; }
+        .calendar-wrapper::-webkit-scrollbar-track { background: var(--bg-primary); border-radius: 0 0 12px 12px; }
+        .calendar-wrapper::-webkit-scrollbar-thumb { background: var(--accent-blue); border-radius: 3px; opacity: 0.6; }
+
+        .hours-section .hours-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
+        }
+
+        .hours-section .hours-wrapper::-webkit-scrollbar { height: 5px; }
+        .hours-section .hours-wrapper::-webkit-scrollbar-track { background: var(--bg-primary); }
+        .hours-section .hours-wrapper::-webkit-scrollbar-thumb { background: var(--accent-blue); border-radius: 3px; }
+
+        /* ======= STATS CARDS ======= */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 16px;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0; right: 0;
+            width: 3px; height: 100%;
+            border-radius: 0 12px 12px 0;
+        }
+
+        .stat-card.blue::before { background: var(--accent-blue); }
+        .stat-card.orange::before { background: var(--accent-orange); }
+        .stat-card.green::before { background: var(--col-ops); }
+        .stat-card.red::before { background: var(--col-holiday); }
+
+        .stat-card:hover {
+            border-color: var(--border-accent);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(56,139,253,0.1);
+        }
+
+        .stat-card .sc-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card .sc-value {
+            font-size: 26px;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 2px;
+        }
+
+        .stat-card .sc-sub {
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+
+        /* ======= LEGEND ======= */
+        .legend-bar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            padding: 12px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 16px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .legend-dot {
+            width: 12px; height: 12px;
+            border-radius: 3px;
+        }
+
+        /* ======= CALENDAR ======= */
+
+        .year-calendar {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            min-width: 900px;
+        }
+
+        .year-calendar th, .year-calendar td {
+            border: 1px solid #21262d;
+            text-align: center;
+            vertical-align: middle;
+            padding: 5px 3px;
+            font-size: 12px;
+            height: 36px;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .year-calendar th {
+            background: #0d1117;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 12px;
+            border-color: var(--border);
+        }
+
+        .day-name-header {
+            background: #161b22 !important;
+            color: var(--text-primary) !important;
+            font-weight: 700 !important;
+            width: 90px !important;
+            font-size: 12px !important;
+        }
+
+        .month-header {
+            background: #0d1117 !important;
+            color: var(--accent-blue) !important;
+            font-weight: 700 !important;
+            font-size: 13px !important;
+        }
+
+        /* Day types */
+        .type-normal { background: var(--col-normal); color: var(--text-primary); }
+        .type-prep { background: var(--col-prep); color: #000; font-weight: bold; }
+        .type-monday { background: var(--col-monday); color: white; font-weight: bold; }
+        .type-thursday { background: var(--col-thursday); color: white; font-weight: bold; }
+        .type-friday { background: var(--col-friday); color: white; font-weight: bold; }
+        .type-long-day { background: var(--col-long); color: white; font-weight: bold; }
+        .type-holiday { background: var(--col-holiday); color: white; font-weight: bold; }
+        .type-ops { background: var(--col-ops); color: white; font-weight: bold; }
+        .type-exam { background: var(--col-exam); color: white; font-weight: bold; }
+        .type-maint { background: var(--col-maint); color: white; font-weight: bold; }
+        .type-other { background: var(--col-other); color: white; font-weight: bold; }
+
+        /* Hover & paint mode */
+        .year-calendar td.paintable {
+            cursor: crosshair;
+            transition: filter 0.1s, transform 0.1s;
+        }
+
+        .year-calendar td.paintable:hover {
+            filter: brightness(1.35);
+            transform: scale(1.08);
+            z-index: 10;
+            position: relative;
+            box-shadow: 0 0 10px rgba(56,139,253,0.4);
+        }
+
+        .summary-row { background: #161b22; font-weight: bold; font-size: 11px; color: var(--text-primary); height: 26px !important; }
+        .summary-row td { border-top: 2px solid var(--border); border-bottom: 2px solid var(--border); }
+        .period-summary { background: var(--accent-blue); color: white; font-size: 13px; font-weight: bold; height: 32px !important; }
+        .period-summary td { border: 2px solid var(--border-accent); }
+
+        .holiday-info { font-size: 9px; color: rgba(255,255,255,0.8); display: block; }
+
+        /* ======= HOURS TABLE ======= */
+        .hours-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .hours-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .hours-header h2 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .hours-header .h-badge {
+            background: rgba(56,139,253,0.15);
+            border: 1px solid rgba(56,139,253,0.3);
+            color: var(--accent-blue);
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 10px;
+        }
+
+        .hours-wrapper { overflow-x: auto; }
+
+        .hours-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            min-width: 900px;
+        }
+
+        .hours-table th {
+            background: #0d1117;
+            color: var(--text-secondary);
+            padding: 8px 4px;
+            text-align: center;
+            font-size: 11px;
+            border: 1px solid var(--border);
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .hours-table th:first-child { width: 160px; }
+        .hours-table th:nth-child(2) { width: 45px; }
+
+        .hours-table td {
+            padding: 5px 4px;
+            text-align: center;
+            border: 1px solid #21262d;
+            font-size: 11px;
+            height: 28px;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .main-header { background: rgba(230,126,34,0.25) !important; color: var(--accent-orange) !important; font-weight: bold !important; font-size: 13px !important; }
+        .main-subject { background: rgba(230,126,34,0.08); color: var(--text-primary); }
+        .general-header { background: rgba(52,152,219,0.2) !important; color: #5dade2 !important; font-weight: bold !important; font-size: 13px !important; }
+        .general-subject { background: rgba(52,152,219,0.05); color: var(--text-primary); }
+        .total-row { background: var(--bg-secondary) !important; color: var(--text-primary) !important; font-weight: bold !important; font-size: 13px !important; }
+        .adjustment-row { background: rgba(192,57,43,0.2) !important; color: #e74c3c !important; font-weight: bold !important; }
+
+        /* ======= TOAST ======= */
+        .toast {
+            position: fixed;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 12px;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 2000;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ======= PRINT ======= */
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 5mm 4mm;
+            }
+
+            /* ── Force color printing ── */
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+
+            body {
+                background: white !important;
+                color: #111 !important;
+            }
+
+            .topbar, .sidebar, .paint-toolbar, .stats-row,
+            .legend-bar, .custom-type-overlay { display: none !important; }
+
+            .main-content { margin: 0 !important; padding: 0 !important; }
+
+            /* ── Print header / title ── */
+            .print-header {
+                display: flex !important;
+                align-items: center;
+                justify-content: space-between;
+                padding: 5px 10px 6px;
+                border-bottom: 3px solid #1a3a5c;
+                margin-bottom: 5px;
+            }
+
+            .print-header .ph-title {
+                font-size: 15px;
+                font-weight: 900;
+                color: #1a3a5c;
+            }
+
+            .print-header .ph-meta {
+                font-size: 10px;
+                color: #555;
+            }
+
+            /* ── Calendar: own page, full vivid colour ── */
+            .calendar-wrapper {
+                border: none !important;
+                border-radius: 0 !important;
+                page-break-after: always;
+                break-after: page;
+            }
+
+            .year-calendar th, .year-calendar td {
+                border: 1px solid #999 !important;
+                font-size: 8.5px !important;
+                padding: 2px 2px !important;
+                font-family: 'Cairo', sans-serif !important;
+            }
+
+            .year-calendar .month-header {
+                background: #1a3a5c !important;
+                color: white !important;
+                font-size: 9.5px !important;
+                font-weight: 700 !important;
+            }
+
+            .year-calendar .day-name-header {
+                background: #2c3e50 !important;
+                color: white !important;
+                font-weight: 700 !important;
+                font-size: 8.5px !important;
+            }
+
+            /* ─ Calendar day colours — vivid ─ */
+            .type-normal   { background: #ecf0f1 !important; color: #222 !important; }
+            .type-prep     { background: #f1c40f !important; color: #111 !important; font-weight: 700 !important; }
+            .type-monday   { background: #2471a3 !important; color: white !important; font-weight: 700 !important; }
+            .type-thursday { background: #d35400 !important; color: white !important; font-weight: 700 !important; }
+            .type-friday   { background: #922b21 !important; color: white !important; font-weight: 700 !important; }
+            .type-long-day { background: #1a5276 !important; color: white !important; font-weight: 700 !important; }
+            .type-holiday  { background: #c0392b !important; color: white !important; font-weight: 700 !important; }
+            .type-ops      { background: #1e8449 !important; color: white !important; font-weight: 700 !important; }
+            .type-exam     { background: #d4850a !important; color: white !important; font-weight: 700 !important; }
+            .type-maint    { background: #616a6b !important; color: white !important; font-weight: 700 !important; }
+            .type-other    { background: #6c3483 !important; color: white !important; font-weight: 700 !important; }
+
+            .summary-row td {
+                background: #d6eaf8 !important;
+                color: #1a3a5c !important;
+                font-weight: 700 !important;
+                font-size: 9px !important;
+            }
+
+            .period-summary td {
+                background: #1a3a5c !important;
+                color: white !important;
+                font-weight: 700 !important;
+                font-size: 10px !important;
+            }
+
+            .holiday-info {
+                font-size: 7px !important;
+                color: rgba(255,255,255,0.9) !important;
+            }
+
+            /* ── Hours table: ONE page, no break inside, vivid ── */
+            .hours-section {
+                page-break-before: always;
+                break-before: page;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                border: none !important;
+                border-radius: 0 !important;
+            }
+
+            .hours-header {
+                display: flex !important;
+                align-items: center;
+                gap: 10px;
+                padding: 4px 8px 6px;
+                border-bottom: 3px solid #1a3a5c;
+                margin-bottom: 4px;
+                background: white !important;
+            }
+
+            .hours-header h2 {
+                font-size: 13px !important;
+                font-weight: 900 !important;
+                color: #1a3a5c !important;
+            }
+
+            .h-badge {
+                background: #1a3a5c !important;
+                color: white !important;
+                font-size: 8px !important;
+                padding: 2px 7px !important;
+                border-radius: 20px !important;
+            }
+
+            .hours-wrapper {
+                overflow: visible !important;
+            }
+
+            .hours-table {
+                width: 100% !important;
+                font-size: 7px !important;
+                border-collapse: collapse !important;
+                table-layout: auto !important;
+                min-width: unset !important;
+            }
+
+            .hours-table th {
+                background: #1a3a5c !important;
+                color: white !important;
+                padding: 3px 2px !important;
+                border: 1px solid #7f8c8d !important;
+                font-size: 7.5px !important;
+                text-align: center !important;
+                white-space: nowrap !important;
+            }
+
+            .hours-table td {
+                padding: 2px 2px !important;
+                border: 1px solid #bdc3c7 !important;
+                text-align: center !important;
+                font-size: 7px !important;
+                height: auto !important;
+                white-space: nowrap !important;
+            }
+
+            /* ─ Hours table row colours — vivid ─ */
+            .main-header {
+                background: #e67e22 !important;
+                color: white !important;
+                font-weight: 700 !important;
+                font-size: 8.5px !important;
+            }
+
+            .main-subject {
+                background: #fef5e4 !important;
+                color: #111 !important;
+            }
+
+            .general-header {
+                background: #2471a3 !important;
+                color: white !important;
+                font-weight: 700 !important;
+                font-size: 8.5px !important;
+            }
+
+            .general-subject {
+                background: #eaf4fb !important;
+                color: #111 !important;
+            }
+
+            .total-row {
+                background: #1a3a5c !important;
+                color: white !important;
+                font-weight: 700 !important;
+                font-size: 8.5px !important;
+            }
+
+            .adjustment-row {
+                background: #fadbd8 !important;
+                color: #922b21 !important;
+                font-weight: 700 !important;
+            }
+
+            /* First two columns of hours table wider */
+            .hours-table th:first-child,
+            .hours-table td:first-child { width: 110px !important; text-align: right !important; padding-right: 5px !important; }
+            .hours-table th:nth-child(2),
+            .hours-table td:nth-child(2) { width: 30px !important; }
+        }
+
+        /* ======= SCROLLBAR ======= */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-primary); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+        /* ======= ADD CUSTOM TYPE BUTTON ======= */
+        .paint-add-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            padding: 6px 10px;
+            border-radius: 10px;
+            border: 2px dashed var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+            background: transparent;
+            color: var(--text-secondary);
+        }
+
+        .paint-add-btn:hover {
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+            background: rgba(56,139,253,0.08);
+        }
+
+        .paint-add-btn .pt-icon {
+            width: 22px; height: 22px;
+            border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .paint-add-btn .pt-label {
+            font-size: 9px;
+            white-space: nowrap;
+        }
+
+        /* ======= CUSTOM TYPE POPUP ======= */
+        .custom-type-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            backdrop-filter: blur(4px);
+        }
+
+        .custom-type-overlay.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .custom-type-popup {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            width: 320px;
+            max-width: 90vw;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.6);
+            transform: scale(0.95);
+            transition: transform 0.2s;
+        }
+
+        .custom-type-overlay.visible .custom-type-popup {
+            transform: scale(1);
+        }
+
+        .popup-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 18px;
+            text-align: center;
+        }
+
+        .popup-field {
+            margin-bottom: 14px;
+        }
+
+        .popup-field label {
+            display: block;
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .popup-field input[type="text"] {
+            width: 100%;
+            padding: 8px 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'Cairo', sans-serif;
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .popup-field input[type="text"]:focus { border-color: var(--accent-blue); }
+
+        .popup-color-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .popup-color-row input[type="color"] {
+            width: 44px; height: 36px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-card);
+            cursor: pointer;
+            padding: 2px 4px;
+        }
+
+        .color-presets {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .color-preset {
+            width: 24px; height: 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.15s, transform 0.15s;
+        }
+
+        .color-preset:hover, .color-preset.selected {
+            border-color: white;
+            transform: scale(1.15);
+        }
+
+        .popup-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .popup-btn {
+            flex: 1;
+            padding: 9px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            font-family: 'Cairo', sans-serif;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .popup-btn.confirm {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: white;
+        }
+
+        .popup-btn.confirm:hover { background: #1f6feb; }
+
+        .popup-btn.cancel {
+            background: var(--bg-card);
+            color: var(--text-secondary);
+        }
+
+        .popup-btn.cancel:hover { background: var(--bg-hover); }
+
+        /* Dynamic custom type CSS classes are injected via JS */
+    </style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+    <div class="topbar-brand">
+        <div class="brand-icon">🎯</div>
+        <h1>نظام التخطيط التدريبي</h1>
+    </div>
+
+    <div class="topbar-controls">
+        <div class="ctrl-group">
+            <label>السنة</label>
+            <input type="number" id="yearInput" value="2025" min="2000" max="2100" style="width:60px">
+        </div>
+        <div class="ctrl-group">
+            <label>الفترة</label>
+            <select id="periodSelect">
+                <option value="jan">يناير — يونيو</option>
+                <option value="jul">يوليو — ديسمبر</option>
+            </select>
+        </div>
+        <button class="topbar-btn primary" onclick="generateCalendar()">🔄 <span class="btn-text">توليد</span></button>
+        <button class="topbar-btn print-btn" onclick="exportPDF()">📄 <span class="btn-text">PDF</span></button>
+        <button class="topbar-btn success" onclick="exportExcel()">📊 <span class="btn-text">Excel</span></button>
+    </div>
+</div>
+
+<!-- Hidden stubs for backward-compat JS references -->
+<span id="customCount" style="display:none">0</span>
+<div id="customDaysList" style="display:none"></div>
+
+<!-- MAIN CONTENT -->
+<div class="main-content" id="mainContent">
+
+    <!-- STATS -->
+    <div class="stats-row" id="statsRow">
+        <div class="stat-card blue">
+            <div class="sc-label">إجمالي ساعات التدريب</div>
+            <div class="sc-value" id="stat-total">—</div>
+            <div class="sc-sub">ساعة في الفترة</div>
+        </div>
+        <div class="stat-card" style="position:relative;overflow:hidden;">
+            <div style="position:absolute;top:0;right:0;width:3px;height:100%;background:var(--col-ops);"></div>
+            <div class="sc-label">الساعات النهارية</div>
+            <div class="sc-value" id="stat-day">—</div>
+            <div class="sc-sub">ساعة نهاري</div>
+        </div>
+        <div class="stat-card" style="position:relative;overflow:hidden;">
+            <div style="position:absolute;top:0;right:0;width:3px;height:100%;background:var(--col-exam);"></div>
+            <div class="sc-label">الساعات الليلية</div>
+            <div class="sc-value" id="stat-night">—</div>
+            <div class="sc-sub">ساعة ليلي</div>
+        </div>
+        <div class="stat-card orange">
+            <div class="sc-label">أيام التدريب الفعلية</div>
+            <div class="sc-value" id="stat-training">—</div>
+            <div class="sc-sub">يوم عمل</div>
+        </div>
+    </div>
+
+    <!-- LEGEND -->
+    <div class="legend-bar">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--col-normal);border:1px solid var(--border)"></div><span>تدريب عادي</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--col-prep)"></div><span>تحضيري</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--col-monday)"></div><span>لياقة (1س)</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--col-thursday)"></div><span>تعليم منضم (1س)</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--col-long)"></div><span>يوم طويل (11س)</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--col-holiday)"></div><span>إجازة</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--col-ops)"></div><span>مهمة عمليات</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--col-exam)"></div><span>تقييم واختبار</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--col-maint)"></div><span>صيانة</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--col-other)"></div><span>أخرى</span></div>
+    </div>
+
+    <!-- CALENDAR TABLE -->
+    <div class="calendar-wrapper" id="exportArea">
+        <table class="year-calendar" id="calendarTable">
+            <thead id="calendarHead"></thead>
+            <tbody id="calendarBody"></tbody>
+        </table>
+    </div>
+
+    <!-- HOURS TABLE -->
+    <div class="hours-section">
+        <div class="hours-header">
+            <h2>📊 جدول ربط الساعات</h2>
+            <span class="h-badge">الموازنة الذكية</span>
+        </div>
+        <div class="hours-wrapper">
+            <table class="hours-table" id="hoursTable">
+                <thead id="hoursHead"></thead>
+                <tbody id="hoursBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<!-- CUSTOM TYPE POPUP -->
+<div class="custom-type-overlay" id="customTypeOverlay">
+    <div class="custom-type-popup">
+        <div class="popup-title">➕ إضافة نوع يوم مخصص</div>
+        <div class="popup-field">
+            <label>اسم النوع</label>
+            <input type="text" id="customTypeName" placeholder="مثال: زيارة ميدانية" maxlength="20">
+        </div>
+        <div class="popup-field">
+            <label>اختر لوناً</label>
+            <div class="popup-color-row">
+                <input type="color" id="customTypeColor" value="#e91e8c">
+                <div class="color-presets" id="colorPresets">
+                    <div class="color-preset" style="background:#e91e8c" data-color="#e91e8c"></div>
+                    <div class="color-preset" style="background:#00bcd4" data-color="#00bcd4"></div>
+                    <div class="color-preset" style="background:#ff5722" data-color="#ff5722"></div>
+                    <div class="color-preset" style="background:#4caf50" data-color="#4caf50"></div>
+                    <div class="color-preset" style="background:#9c27b0" data-color="#9c27b0"></div>
+                    <div class="color-preset" style="background:#ff9800" data-color="#ff9800"></div>
+                    <div class="color-preset" style="background:#607d8b" data-color="#607d8b"></div>
+                    <div class="color-preset" style="background:#795548" data-color="#795548"></div>
+                </div>
+            </div>
+        </div>
+        <div class="popup-actions">
+            <button class="popup-btn cancel" onclick="closeCustomTypePopup()">إلغاء</button>
+            <button class="popup-btn confirm" onclick="saveCustomType()">✓ إضافة</button>
+        </div>
+    </div>
+</div>
+
+<!-- PAINT TOOLBAR -->
+<div class="paint-toolbar">
+    <span class="paint-label">🎨 وضع الدهان</span>
+
+    <button class="paint-mode-toggle" id="paintToggle" onclick="togglePaintMode()">
+        <span class="toggle-dot"></span>
+        <span id="paintToggleLabel">غير مفعّل</span>
+    </button>
+
+    <div class="paint-divider"></div>
+
+    <button class="paint-tool" data-type="holiday" onclick="selectPaintType('holiday')" title="إجازة">
+        <div class="pt-icon" style="background:var(--col-holiday)">🔴</div>
+        <span class="pt-label">إجازة</span>
+    </button>
+    <button class="paint-tool" data-type="ops" onclick="selectPaintType('ops')" title="مهمة عمليات">
+        <div class="pt-icon" style="background:var(--col-ops)">🟢</div>
+        <span class="pt-label">عمليات</span>
+    </button>
+    <button class="paint-tool" data-type="exam" onclick="selectPaintType('exam')" title="تقييم واختبار">
+        <div class="pt-icon" style="background:var(--col-exam)">🟡</div>
+        <span class="pt-label">اختبار</span>
+    </button>
+    <button class="paint-tool" data-type="maint" onclick="selectPaintType('maint')" title="صيانة">
+        <div class="pt-icon" style="background:var(--col-maint)">⚫</div>
+        <span class="pt-label">صيانة</span>
+    </button>
+    <button class="paint-tool" data-type="other" onclick="selectPaintType('other')" title="أخرى">
+        <div class="pt-icon" style="background:var(--col-other)">🟣</div>
+        <span class="pt-label">أخرى</span>
+    </button>
+
+    <div class="paint-divider"></div>
+
+    <button class="paint-tool" data-type="erase" onclick="selectPaintType('erase')" title="مسح">
+        <div class="pt-icon" style="background:#30363d">🗑️</div>
+        <span class="pt-label">مسح</span>
+    </button>
+
+    <div class="paint-divider"></div>
+
+    <button class="paint-add-btn" onclick="openCustomTypePopup()" title="إضافة نوع مخصص">
+        <div class="pt-icon">＋</div>
+        <span class="pt-label">نوع جديد</span>
+    </button>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+    // ======================== STATE ========================
+    let currentYear = 2025;
+    let currentPeriod = 'jul';
+    let calendarData = {};
+    let weekData = [];
+    let customOffDays = [];
+    let paintModeActive = false;
+    let selectedPaintType = 'holiday';
+    let isPainting = false;
+    let customDayTypes = []; // user-defined types stored in localStorage
+
+    // ======================== ORIGINAL DATA (UNCHANGED) ========================
+    const fixedHolidays = {
+        '1-1': 'رأس السنة الميلادية',
+        '1-7': 'عيد الميلاد المجيد',
+        '1-25': 'عيد الشرطة',
+        '4-25': 'تحرير سيناء',
+        '5-1': 'عيد العمال',
+        '6-30': '30 يونيو',
+        '7-23': 'ثورة 23 يوليو',
+        '10-6': 'عيد القوات المسلحة'
+    };
+
+    let typeConfig = {
+        holiday: { label: 'إجازة', class: 'type-holiday', tagClass: 'tag-holiday' },
+        ops: { label: 'مهمة عمليات', class: 'type-ops', tagClass: 'tag-ops' },
+        exam: { label: 'تقييم واختبار', class: 'type-exam', tagClass: 'tag-exam' },
+        maint: { label: 'صيانة', class: 'type-maint', tagClass: 'tag-maint' },
+        other: { label: 'أخرى', class: 'type-other', tagClass: 'tag-other' }
+    };
+
+    const subjects = [
+        { name: 'موضوعات رئيسية', percent: 70, isHeader: true, type: 'main-header' },
+        { name: 'تك عام ومهارة', percent: 8, type: 'main-subject' },
+        { name: 'تك خاص', percent: 20, type: 'main-subject' },
+        { name: 'فني تخصصي', percent: 21, type: 'main-subject' },
+        { name: 'فني / رماية أمن', percent: 9, type: 'main-subject' },
+        { name: 'لياقة بدنية', percent: 12, type: 'main-subject' },
+        { name: 'موضوعات عامة', percent: 30, isHeader: true, type: 'general-header' },
+        { name: 'تعليم منضم', percent: 3, type: 'general-subject' },
+        { name: 'انضباط عسكري', percent: 3, type: 'general-subject' },
+        { name: 'أمن حربي', percent: 2, type: 'general-subject' },
+        { name: 'عدد وسططع', percent: 3, type: 'general-subject' },
+        { name: 'طبوغرافيا', percent: 3, type: 'general-subject' },
+        { name: 'تد معنوي', percent: 2, type: 'general-subject' },
+        { name: 'تد هندسي', percent: 3, type: 'general-subject' },
+        { name: 'تد كيماوي', percent: 3, type: 'general-subject' },
+        { name: 'تد إنشائي', percent: 2, type: 'general-subject' },
+        { name: 'تد إداري وفني', percent: 2, type: 'general-subject' },
+        { name: 'تاريخ عسكري', percent: 2, type: 'general-subject' },
+        { name: 'قانون دولي إنساني', percent: 1, type: 'general-subject' },
+        { name: 'حرب معلومات', percent: 1, type: 'general-subject' }
+    ];
+
+    // ======================== INIT ========================
+    document.addEventListener('DOMContentLoaded', function() {
+        loadCustomDayTypes();
+        loadCustomOffDays();
+        generateCalendar();
+        selectPaintType('holiday');
+
+        // Preset color picker sync
+        document.getElementById('colorPresets').addEventListener('click', function(e) {
+            const preset = e.target.closest('.color-preset');
+            if (!preset) return;
+            document.getElementById('customTypeColor').value = preset.dataset.color;
+            document.querySelectorAll('.color-preset').forEach(p => p.classList.remove('selected'));
+            preset.classList.add('selected');
+        });
+
+        document.getElementById('customTypeColor').addEventListener('input', function() {
+            document.querySelectorAll('.color-preset').forEach(p => p.classList.remove('selected'));
+        });
+    });
+
+    let sidebarVisible = false; // hidden by default
+
+    // ======================== UI CONTROLS ========================
+    function openSidebar() {
+        sidebarVisible = true;
+        document.getElementById('sidebar').classList.add('open');
+        document.getElementById('sidebarBackdrop').classList.add('visible');
+        document.body.style.overflow = 'hidden'; // prevent background scroll
+    }
+
+    // Sidebar removed — stub functions to avoid errors
+    function closeSidebar() {}
+    function openSidebar() {}
+    function toggleSidebar() {}
+
+    function togglePaintMode() {
+        paintModeActive = !paintModeActive;
+        const toggle = document.getElementById('paintToggle');
+        const label = document.getElementById('paintToggleLabel');
+        toggle.classList.toggle('active', paintModeActive);
+        label.textContent = paintModeActive ? 'مفعّل ✓' : 'غير مفعّل';
+        document.querySelectorAll('.year-calendar td[data-datekey]').forEach(td => {
+            td.classList.toggle('paintable', paintModeActive);
+        });
+        showToast(paintModeActive ? '🎨 وضع الدهان مفعّل — انقر على أي يوم لتغيير نوعه' : '⛔ وضع الدهان معطّل');
+    }
+
+    function selectPaintType(type) {
+        selectedPaintType = type;
+        document.querySelectorAll('.paint-tool').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.type === type);
+        });
+    }
+
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2800);
+    }
+
+    // ======================== CUSTOM DAY TYPES ========================
+    function loadCustomDayTypes() {
+        const saved = localStorage.getItem('customDayTypes');
+        customDayTypes = saved ? JSON.parse(saved) : [];
+        customDayTypes.forEach(ct => registerCustomType(ct));
+        renderCustomTypeButtons();
+    }
+
+    function saveCustomDayTypes() {
+        localStorage.setItem('customDayTypes', JSON.stringify(customDayTypes));
+    }
+
+    function registerCustomType(ct) {
+        // Inject CSS class dynamically
+        const styleId = 'custom-type-style-' + ct.id;
+        if (!document.getElementById(styleId)) {
+            const style = document.createElement('style');
+            style.id = styleId;
+            style.textContent = `.${ct.cssClass} { background: ${ct.color} !important; color: white; font-weight: bold; }
+.tag-${ct.id} { background: ${ct.color}; }`;
+            document.head.appendChild(style);
+        }
+        // Add to typeConfig
+        typeConfig[ct.id] = {
+            label: ct.label,
+            class: ct.cssClass,
+            tagClass: 'tag-' + ct.id,
+            isCustom: true,
+            color: ct.color
+        };
+    }
+
+    function renderCustomTypeButtons() {
+        // Remove old custom buttons from toolbar
+        document.querySelectorAll('.paint-tool[data-custom="true"]').forEach(b => b.remove());
+
+        const toolbar = document.querySelector('.paint-toolbar');
+        const addBtn = toolbar.querySelector('.paint-add-btn');
+        const dividerBeforeAdd = addBtn.previousElementSibling; // the divider
+
+        customDayTypes.forEach(ct => {
+            const btn = document.createElement('button');
+            btn.className = 'paint-tool';
+            btn.dataset.type = ct.id;
+            btn.dataset.custom = 'true';
+            btn.title = ct.label;
+            btn.onclick = () => selectPaintType(ct.id);
+            btn.innerHTML = `<div class="pt-icon" style="background:${ct.color}; font-size:10px; color:white; font-weight:bold">${ct.label.charAt(0)}</div>
+                             <span class="pt-label">${ct.label.length > 5 ? ct.label.substring(0,5)+'…' : ct.label}</span>`;
+            toolbar.insertBefore(btn, dividerBeforeAdd);
+        });
+    }
+
+    function openCustomTypePopup() {
+        document.getElementById('customTypeName').value = '';
+        document.getElementById('customTypeColor').value = '#e91e8c';
+        document.querySelectorAll('.color-preset').forEach(p => p.classList.remove('selected'));
+        document.getElementById('customTypeOverlay').classList.add('visible');
+        setTimeout(() => document.getElementById('customTypeName').focus(), 100);
+    }
+
+    function closeCustomTypePopup() {
+        document.getElementById('customTypeOverlay').classList.remove('visible');
+    }
+
+    // Close popup on overlay click
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('customTypeOverlay').addEventListener('click', function(e) {
+            if (e.target === this) closeCustomTypePopup();
+        });
+        // Enter key confirms
+        document.getElementById('customTypeName').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') saveCustomType();
+            if (e.key === 'Escape') closeCustomTypePopup();
+        });
+    });
+
+    function saveCustomType() {
+        const name = document.getElementById('customTypeName').value.trim();
+        const color = document.getElementById('customTypeColor').value;
+
+        if (!name) { showToast('⚠️ يرجى كتابة اسم النوع'); return; }
+
+        const id = 'custom_' + Date.now();
+        const cssClass = 'type-' + id;
+        const ct = { id, label: name, color, cssClass };
+
+        customDayTypes.push(ct);
+        saveCustomDayTypes();
+        registerCustomType(ct);
+        renderCustomTypeButtons();
+        closeCustomTypePopup();
+        selectPaintType(id);
+        showToast(`✅ تم إضافة نوع "${name}" — اضغط على أي يوم لتلوينه`);
+    }
+
+    // ======================== CALENDAR CELL COLOR PERSISTENCE ========================
+    function saveCalendarColors() {
+        // Save the current customOffDays (which already encode cell colors) keyed by year
+        // This is already done via saveCustomOffDays. But we additionally persist a
+        // snapshot of the paint state so it survives year-change reloads.
+        localStorage.setItem('calendarColors_' + currentYear + '_' + currentPeriod,
+            JSON.stringify(customOffDays));
+    }
+
+    function restoreCalendarColors() {
+        // Re-apply saved colors to DOM cells (customOffDays already loaded; just re-paint DOM)
+        document.querySelectorAll('.year-calendar td[data-datekey]').forEach(td => {
+            const dateKey = td.dataset.datekey;
+            if (!dateKey) return;
+            const saved = customOffDays.find(d => d.date === dateKey);
+            if (saved) {
+                const cfg = typeConfig[saved.type] || typeConfig.other;
+                // Remove existing type classes
+                td.className = td.className.replace(/\btype-\S+/g, '').trim();
+                td.classList.add(cfg.class);
+                if (paintModeActive) td.classList.add('paintable');
+                // Update label inside cell
+                const label = td.querySelector('.holiday-info');
+                if (label) { label.textContent = cfg.label; }
+                else { td.innerHTML = td.textContent.trim().replace(/\D/g,'') + `<span class="holiday-info">${cfg.label}</span>`; }
+            }
+        });
+    }
+
+    // ======================== PAINT ON CELL ========================
+    function attachPaintListeners() {
+        document.querySelectorAll('.year-calendar td[data-datekey]').forEach(td => {
+            // Remove old listeners by cloning
+            const newTd = td.cloneNode(true);
+            td.parentNode.replaceChild(newTd, td);
+        });
+
+        document.querySelectorAll('.year-calendar td[data-datekey]').forEach(td => {
+            if (paintModeActive) td.classList.add('paintable');
+
+            td.addEventListener('mousedown', (e) => {
+                if (!paintModeActive) return;
+                isPainting = true;
+                paintCell(td);
+                e.preventDefault();
+            });
+
+            td.addEventListener('mouseenter', () => {
+                if (!paintModeActive || !isPainting) return;
+                paintCell(td);
+            });
+
+            td.addEventListener('touchstart', (e) => {
+                if (!paintModeActive) return;
+                isPainting = true;
+                paintCell(td);
+            }, { passive: true });
+        });
+    }
+
+    document.addEventListener('mouseup', () => { isPainting = false; });
+    document.addEventListener('touchend', () => { isPainting = false; });
+
+    function paintCell(td) {
+        const dateKey = td.dataset.datekey;
+        if (!dateKey) return;
+
+        const [y, m, d] = dateKey.split('-').map(Number);
+
+        if (selectedPaintType === 'erase') {
+            customOffDays = customOffDays.filter(day => day.date !== dateKey);
+        } else {
+            const existing = customOffDays.find(day => day.date === dateKey);
+            if (existing) {
+                existing.type = selectedPaintType;
+            } else {
+                customOffDays.push({ date: dateKey, type: selectedPaintType });
+            }
+        }
+
+        // Save immediately — both the off-days list and the color snapshot
+        saveCustomOffDays();
+        saveCalendarColors();
+        renderCustomDaysList();
+        generateCalendar();
+
+        // Re-enable paint mode after re-render
+        paintModeActive = true;
+        const toggle = document.getElementById('paintToggle');
+        toggle.classList.add('active');
+        document.getElementById('paintToggleLabel').textContent = 'مفعّل ✓';
+    }
+
+    // ======================== QUICK ACTIONS ========================
+    function markAllFridays(type) {
+        const startMonth = currentPeriod === 'jan' ? 0 : 6;
+        const endMonth = currentPeriod === 'jan' ? 5 : 11;
+
+        for (let m = startMonth; m <= endMonth; m++) {
+            const daysInMonth = new Date(currentYear, m + 1, 0).getDate();
+            for (let d = 1; d <= daysInMonth; d++) {
+                const date = new Date(currentYear, m, d);
+                if (date.getDay() === 5) {
+                    const dateStr = `${currentYear}-${m + 1}-${d}`;
+                    const existing = customOffDays.find(day => day.date === dateStr);
+                    if (existing) { existing.type = type; }
+                    else { customOffDays.push({ date: dateStr, type: type }); }
+                }
+            }
+        }
+        saveCustomOffDays();
+        renderCustomDaysList();
+        generateCalendar();
+        showToast(`✅ تم تحديد كل الجمعات كـ "${typeConfig[type].label}"`);
+    }
+
+    function clearFridays() {
+        const startMonth = currentPeriod === 'jan' ? 0 : 6;
+        const endMonth = currentPeriod === 'jan' ? 5 : 11;
+
+        for (let m = startMonth; m <= endMonth; m++) {
+            const daysInMonth = new Date(currentYear, m + 1, 0).getDate();
+            for (let d = 1; d <= daysInMonth; d++) {
+                const date = new Date(currentYear, m, d);
+                if (date.getDay() === 5) {
+                    const dateStr = `${currentYear}-${m + 1}-${d}`;
+                    customOffDays = customOffDays.filter(day => day.date !== dateStr);
+                }
+            }
+        }
+        saveCustomOffDays();
+        renderCustomDaysList();
+        generateCalendar();
+        showToast('🗑️ تم إلغاء تحديد الجمعات');
+    }
+
+    // ======================== PDF EXPORT ========================
+    async function exportPDF() {
+        showToast('📄 جاري إنشاء التقرير...');
+        try {
+            const jsPDFLib = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
+            if (!jsPDFLib) { showToast('❌ مكتبة PDF غير محملة'); return; }
+
+            const pdf = new jsPDFLib({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+            const pageW = pdf.internal.pageSize.getWidth();
+            const pageH = pdf.internal.pageSize.getHeight();
+
+            const drawFrame = (pageNum) => {
+                pdf.setFillColor(26, 58, 92);
+                pdf.rect(0, 0, pageW, 10, 'F');
+                pdf.setDrawColor(230, 126, 34);
+                pdf.setLineWidth(0.8);
+                pdf.line(0, 10, pageW, 10);
+                pdf.setFillColor(240, 240, 240);
+                pdf.rect(0, pageH - 5, pageW, 5, 'F');
+                pdf.setTextColor(120, 120, 120);
+                pdf.setFontSize(7);
+                pdf.text(`${pageNum} / 2`, pageW / 2, pageH - 1.5, { align: 'center' });
+            };
+
+            // ══ صفحة 1: الأجندة (صورة) ══
+            const calEl = document.getElementById('exportArea');
+            window.scrollTo(0, 0);
+            calEl.scrollIntoView({ behavior: 'instant', block: 'start' });
+            await new Promise(r => setTimeout(r, 400));
+            const fullW = Math.max(calEl.scrollWidth, calEl.offsetWidth);
+            const fullH = Math.max(calEl.scrollHeight, calEl.offsetHeight);
+            const calCanvas = await html2canvas(calEl, {
+                scale: 2, useCORS: true, logging: false,
+                backgroundColor: '#ffffff',
+                width: fullW, height: fullH, windowWidth: fullW, scrollX: 0, scrollY: 0,
+                onclone: (clonedDoc, clonedEl) => {
+                    clonedEl.style.width = fullW + 'px';
+                    clonedEl.style.overflow = 'visible';
+                    const s = clonedDoc.createElement('style');
+                    s.innerHTML = `
+                        * { -webkit-print-color-adjust: exact !important; }
+                        body { background:#fff !important; }
+                        .type-normal{background:#dce8f5!important;color:#111!important}
+                        .type-prep{background:#f1c40f!important;color:#111!important}
+                        .type-monday{background:#2471a3!important;color:#fff!important}
+                        .type-thursday{background:#d35400!important;color:#fff!important}
+                        .type-friday{background:#922b21!important;color:#fff!important}
+                        .type-long-day{background:#1a5276!important;color:#fff!important}
+                        .type-holiday{background:#c0392b!important;color:#fff!important}
+                        .type-ops{background:#1e8449!important;color:#fff!important}
+                        .type-exam{background:#d4850a!important;color:#fff!important}
+                        .type-maint{background:#616a6b!important;color:#fff!important}
+                        .type-other{background:#6c3483!important;color:#fff!important}
+                        th,.month-header{background:#1a3a5c!important;color:#fff!important}
+                        .day-name-header{background:#2c3e50!important;color:#fff!important}
+                        .summary-row{background:#d6eaf8!important;color:#1a3a5c!important}
+                        .period-summary{background:#1a3a5c!important;color:#fff!important}
+                        .calendar-wrapper{background:#fff!important;overflow:visible!important}
+                        .topbar,.paint-toolbar,.stats-row,.legend-bar{display:none!important}
+                    `;
+                    clonedDoc.head.appendChild(s);
+                }
+            });
+            drawFrame(1);
+            const ratio = calCanvas.width / calCanvas.height;
+            const maxW = pageW - 4, maxH = pageH - 16;
+            let imgW = maxW, imgH = maxW / ratio;
+            if (imgH > maxH) { imgH = maxH; imgW = imgH * ratio; }
+            pdf.addImage(calCanvas.toDataURL('image/jpeg', 0.95), 'JPEG',
+                (pageW - imgW) / 2, 12, imgW, imgH);
+
+            // ══ صفحة 2: جدول الساعات (رسم مباشر) ══
+            pdf.addPage();
+            drawFrame(2);
+
+            const thead = document.getElementById('hoursHead');
+            const tbody = document.getElementById('hoursBody');
+            const headRows = Array.from(thead.querySelectorAll('tr'));
+            const bodyRows = Array.from(tbody.querySelectorAll('tr'));
+
+            // حساب عدد الأعمدة من صف الأرقام (الصف الثاني في الهيدر)
+            const colCount = headRows[1]
+                ? headRows[1].querySelectorAll('th').length : 0;
+
+            const mX = 2;
+            const startY = 12;
+            const availW = pageW - mX * 2;
+            const availH = pageH - startY - 7;
+            const totalRows = headRows.length + bodyRows.length;
+            const rH = Math.min(5.5, availH / totalRows);
+            const fSize = Math.min(5.5, rH * 0.7);
+
+            // أعرض الأعمدة (RTL)
+            const nameW  = 26;
+            const pctW   = 7;
+            const totW   = 11;
+            const dataW  = colCount > 3 ? (availW - nameW - pctW - totW) / (colCount - 3) : 6;
+
+            // حساب x لكل عمود (RTL: نبدأ من اليمين)
+            const colX = (i, span = 1) => {
+                if (i === 0) return mX + availW - nameW;
+                if (i === 1) return mX + availW - nameW - pctW;
+                if (i === colCount - 1) return mX;
+                const di = i - 2;
+                const dTotal = colCount - 3;
+                return mX + totW + (dTotal - 1 - di) * dataW;
+            };
+            const colW = (i, span = 1) => {
+                if (i === 0) return nameW;
+                if (i === 1) return pctW;
+                if (i === colCount - 1) return totW;
+                return dataW * span;
+            };
+
+            const cell = (txt, x, y, w, h, bg, fg, bold = false) => {
+                pdf.setFillColor(...bg);
+                pdf.rect(x, y, w, h, 'F');
+                pdf.setDrawColor(190, 190, 190);
+                pdf.setLineWidth(0.08);
+                pdf.rect(x, y, w, h, 'S');
+
+                // رسم النص عبر canvas صغير للدعم العربي
+                const scale = 3;
+                const cvs = document.createElement('canvas');
+                cvs.width = Math.round(w * scale * 3.78);  // mm to px (96dpi)
+                cvs.height = Math.round(h * scale * 3.78);
+                const ctx = cvs.getContext('2d');
+                ctx.fillStyle = `rgb(${bg[0]},${bg[1]},${bg[2]})`;
+                ctx.fillRect(0, 0, cvs.width, cvs.height);
+                ctx.fillStyle = `rgb(${fg[0]},${fg[1]},${fg[2]})`;
+                ctx.font = `${bold ? 'bold' : 'normal'} ${Math.round(fSize * scale * 1.2)}px Cairo, Arial`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(String(txt || ''), cvs.width / 2, cvs.height / 2);
+                const imgD = cvs.toDataURL('image/png');
+                pdf.addImage(imgD, 'PNG', x, y, w, h);
+            };
+
+            let cy = startY;
+
+            // رسم هيدر الجدول
+            headRows.forEach(tr => {
+                const cells = Array.from(tr.querySelectorAll('th'));
+                let xi = mX + availW;
+                cells.forEach((td, i) => {
+                    const sp = parseInt(td.getAttribute('colspan') || 1);
+                    const w = i === 0 ? nameW
+                        : i === 1 ? pctW
+                        : i === cells.length - 1 ? totW
+                        : dataW * sp;
+                    xi -= w;
+                    cell(td.textContent.trim(), xi, cy, w, rH,
+                        [26, 58, 92], [255, 255, 255], true);
+                });
+                cy += rH;
+            });
+
+            // رسم صفوف الجسم
+            bodyRows.forEach(tr => {
+                const cells = Array.from(tr.querySelectorAll('td'));
+                const cls = tr.className;
+                let bg = [255, 255, 255], fg = [60, 60, 60], bold = false;
+                if      (cls.includes('main-header'))    { bg=[230,126,34];  fg=[255,255,255]; bold=true; }
+                else if (cls.includes('main-subject'))   { bg=[254,245,228]; fg=[80,50,0]; }
+                else if (cls.includes('general-header')) { bg=[36,113,163];  fg=[255,255,255]; bold=true; }
+                else if (cls.includes('general-subject')){ bg=[234,244,251]; fg=[20,60,100]; }
+                else if (cls.includes('total-row'))      { bg=[26,58,92];    fg=[255,255,255]; bold=true; }
+                else if (cls.includes('adjustment-row')) { bg=[250,219,216]; fg=[146,43,33]; bold=true; }
+
+                let xi = mX + availW;
+                cells.forEach((td, i) => {
+                    const w = i === 0 ? nameW
+                        : i === 1 ? pctW
+                        : i === cells.length - 1 ? totW
+                        : dataW;
+                    xi -= w;
+                    cell(td.textContent.trim(), xi, cy, w, rH, bg, fg, bold && i === 0);
+                });
+                cy += rH;
+            });
+
+            window.scrollTo(0, 0);
+            pdf.save(`خطة_تدريبية_${currentYear}_${currentPeriod === 'jan' ? 'يناير_يونيو' : 'يوليو_ديسمبر'}.pdf`);
+            showToast('✅ تم حفظ التقرير!');
+        } catch(e) {
+            console.error(e);
+            showToast('❌ خطأ: ' + e.message);
+        }
+    }
+
+    // ======================== EXCEL EXPORT ========================
+    function exportExcel() {
+        showToast('📊 جاري إنشاء Excel...');
+        try {
+            const wb = XLSX.utils.book_new();
+
+            // Sheet 1: Hours Table
+            const hoursTable = document.getElementById('hoursTable');
+            const hoursWS = XLSX.utils.table_to_sheet(hoursTable);
+            XLSX.utils.book_append_sheet(wb, hoursWS, 'جدول ربط الساعات');
+
+            // Sheet 2: Calendar summary (week totals)
+            const calData = [['الأسبوع', 'الشهر', 'نهاري', 'ليلي', 'إجمالي']];
+            weekData.forEach((week, idx) => {
+                if (!week.isSpare) {
+                    const monthNames = ['يناير','فبراير','مارس','أبريل','مايو','يونيو',
+                                        'يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+                    calData.push([
+                        idx + 1,
+                        monthNames[week.month] || '',
+                        week.totalDay,
+                        week.totalNight,
+                        week.totalHours
+                    ]);
+                }
+            });
+            const calWS = XLSX.utils.aoa_to_sheet(calData);
+            XLSX.utils.book_append_sheet(wb, calWS, 'ملخص الأجندة');
+
+            XLSX.writeFile(wb, `خطة_تدريبية_${currentYear}_${currentPeriod}.xlsx`);
+            showToast('✅ تم حفظ Excel بنجاح!');
+        } catch(e) {
+            showToast('❌ حدث خطأ أثناء التصدير');
+        }
+    }
+
+    // ======================== CUSTOM DAYS (UNCHANGED LOGIC) ========================
+    function addCustomOffDays() {
+        const startDate = document.getElementById('offStartDate').value;
+        const endDate = document.getElementById('offEndDate').value;
+        const type = document.getElementById('offType').value;
+
+        if (!startDate) { showToast('⚠️ يرجى اختيار تاريخ البداية'); return; }
+
+        const end = endDate || startDate;
+        const start = new Date(startDate);
+        const endDt = new Date(end);
+
+        for (let d = new Date(start); d <= endDt; d.setDate(d.getDate() + 1)) {
+            const dateStr = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+            const existing = customOffDays.find(day => day.date === dateStr);
+            if (existing) { existing.type = type; }
+            else { customOffDays.push({ date: dateStr, type: type }); }
+        }
+
+        saveCustomOffDays();
+        renderCustomDaysList();
+        generateCalendar();
+        showToast('✅ تم إضافة الأيام بنجاح');
+    }
+
+    function removeCustomOffDay(dateStr) {
+        customOffDays = customOffDays.filter(day => day.date !== dateStr);
+        saveCustomOffDays();
+        renderCustomDaysList();
+        generateCalendar();
+    }
+
+    function clearAllOffDays() {
+        if (confirm('هل أنت متأكد من مسح جميع الأيام خارج التدريب؟')) {
+            customOffDays = [];
+            saveCustomOffDays();
+            renderCustomDaysList();
+            generateCalendar();
+            showToast('🗑️ تم مسح جميع الأيام');
+        }
+    }
+
+    function saveCustomOffDays() {
+        localStorage.setItem('customOffDays_' + currentYear, JSON.stringify(customOffDays));
+    }
+
+    function loadCustomOffDays() {
+        const yearInput = document.getElementById('yearInput').value || currentYear;
+        const period = document.getElementById('periodSelect').value || currentPeriod;
+        // Primary source: customOffDays (shared for whole year)
+        const saved = localStorage.getItem('customOffDays_' + yearInput);
+        // Color snapshot is merged in case it has extra entries (belt-and-suspenders)
+        const colorSnap = localStorage.getItem('calendarColors_' + yearInput + '_' + period);
+        let base = saved ? JSON.parse(saved) : [];
+        if (colorSnap) {
+            const snap = JSON.parse(colorSnap);
+            snap.forEach(entry => {
+                if (!base.find(b => b.date === entry.date)) base.push(entry);
+            });
+        }
+        customOffDays = base;
+        renderCustomDaysList();
+    }
+
+    function renderCustomDaysList() {
+        const container = document.getElementById('customDaysList');
+        const countEl = document.getElementById('customCount');
+        if (countEl) countEl.textContent = customOffDays.length;
+        if (container) {
+            if (customOffDays.length === 0) {
+                container.innerHTML = '<span style="color:var(--text-muted);font-size:11px">لا توجد أيام مخصصة</span>';
+            } else {
+                container.innerHTML = customOffDays.map(day => {
+                    const [y, m, d] = day.date.split('-');
+                    const cfg = typeConfig[day.type] || typeConfig.other;
+                    return `<div class="custom-day-tag ${cfg.tagClass}">
+                        <span>${d}/${m} — ${cfg.label}</span>
+                        <button onclick="removeCustomOffDay('${day.date}')">×</button>
+                    </div>`;
+                }).join('');
+            }
+        }
+
+        // Sync offType select if it exists
+        const select = document.getElementById('offType');
+        if (select) {
+            Array.from(select.options).forEach(opt => {
+                if (opt.dataset.custom === 'true') opt.remove();
+            });
+            customDayTypes.forEach(ct => {
+                const opt = document.createElement('option');
+                opt.value = ct.id;
+                opt.textContent = '🔵 ' + ct.label;
+                opt.dataset.custom = 'true';
+                select.appendChild(opt);
+            });
+        }
+    }
+
+    function getDayInfo(month, day, year) {
+        const fixedKey = `${month}-${day}`;
+        const dateStr = `${year}-${month}-${day}`;
+        const customDay = customOffDays.find(d => d.date === dateStr);
+        if (customDay) return { name: typeConfig[customDay.type].label, type: customDay.type, isCustom: true };
+        if (fixedHolidays[fixedKey]) return { name: fixedHolidays[fixedKey], type: 'holiday', isCustom: false };
+        return null;
+    }
+
+    // ======================== generateCalendar (safe startDate fix) ========================
+    function generateCalendar() {
+        currentYear = parseInt(document.getElementById('yearInput').value) || 2025;
+        currentPeriod = document.getElementById('periodSelect').value;
+        loadCustomOffDays();
+
+        let startMonth = currentPeriod === 'jan' ? 0 : 6;
+        let endMonth = currentPeriod === 'jan' ? 5 : 11;
+
+        // Safe search: find first Saturday in startMonth — max 7 iterations, never infinite
+        let startDate = new Date(currentYear, startMonth, 1);
+        let safetyCounter = 0;
+        while (startDate.getDay() !== 6 && safetyCounter < 7) {
+            startDate.setDate(startDate.getDate() + 1);
+            safetyCounter++;
+        }
+        // If no Saturday found in first 7 days (shouldn't happen), fallback to day 1
+        if (startDate.getDay() !== 6) {
+            startDate = new Date(currentYear, startMonth, 1);
+        }
+
+        let endDate = new Date(currentYear, endMonth + 1, 0);
+        // Always complete the last week:
+        // Step 1 — move one day forward so we never stop on the last day itself
+        // Step 2 — keep going until we hit the next Friday (day 5)
+        // Cap at 7 extra days so we never get an infinite loop
+        let extCounter = 0;
+        do {
+            endDate.setDate(endDate.getDate() + 1);
+            extCounter++;
+        } while (endDate.getDay() !== 5 && extCounter < 7);
+
+        calendarData = {};
+        weekData = [];
+        let currentDate = new Date(startDate);
+        let weekCount = 0;
+        // Store the real period end (before extension) for labeling overflow days
+        const realEndDate = new Date(currentYear, endMonth + 1, 0);
+
+        while (currentDate <= endDate) {
+            let weekInfo = {
+                weekNum: weekCount + 1,
+                month: currentDate.getMonth(),
+                days: [],
+                totalDay: 0,
+                totalNight: 0,
+                totalHours: 0,
+                isSpare: false  // will be set after days are built
+            };
+
+            for (let day = 0; day < 7; day++) {
+                if (currentDate > endDate) break;
+
+                const dayOfMonth = currentDate.getDate();
+                const month = currentDate.getMonth();
+                const dateKey = `${currentYear}-${month + 1}-${dayOfMonth}`;
+                const dayOfWeek = currentDate.getDay();
+                const isOverflow = currentDate > realEndDate;
+
+                let hours = 0, dayHours = 0, nightHours = 0;
+                let dayClass = 'type-normal';
+                let dayInfo = getDayInfo(month + 1, dayOfMonth, currentYear);
+                let isPrepPeriod = weekCount < 2;
+
+                if (isOverflow) {
+                    // أيام الامتداد (بعد نهاية الفترة) = صفر ساعات دائماً
+                    hours = 0; dayHours = 0; nightHours = 0;
+                    // keep normal day styling so they look like regular days
+                    if (!dayInfo && !isPrepPeriod) {
+                        switch(dayOfWeek) {
+                            case 6: dayClass = 'type-normal'; break;
+                            case 0: dayClass = 'type-long-day'; break;
+                            case 1: dayClass = 'type-monday'; break;
+                            case 3: dayClass = 'type-long-day'; break;
+                            case 4: dayClass = 'type-thursday'; break;
+                            case 5: dayClass = 'type-friday'; break;
+                        }
+                    }
+                } else if (isPrepPeriod) {
+                    hours = 0; dayClass = 'type-prep';
+                    dayInfo = { name: 'تحضيري', type: 'prep' };
+                } else if (dayInfo) {
+                    hours = 0; dayHours = 0; nightHours = 0;
+                    const cfg = typeConfig[dayInfo.type] || typeConfig.other;
+                    dayClass = cfg.class;
+                } else {
+                    switch(dayOfWeek) {
+                        case 6: hours = 7; dayHours = 7; break;
+                        case 0: hours = 11; dayHours = 7; nightHours = 4; dayClass = 'type-long-day'; break;
+                        case 1: hours = 1; dayHours = 1; dayClass = 'type-monday'; break;
+                        case 2:
+                            // الثلاثاء = 7 ساعات دايماً في الأجندة
+                            // ساعات الطابور الإضافية تُحسب فقط في جدول ربط الساعات (fitnessPerWeek)
+                            hours = 7; dayHours = 7; break;
+                        case 3: hours = 11; dayHours = 7; nightHours = 4; dayClass = 'type-long-day'; break;
+                        case 4: hours = 1; dayHours = 1; dayClass = 'type-thursday'; break;
+                        case 5: hours = 0; dayHours = 0; dayClass = 'type-friday'; break;
+                    }
+                }
+
+                weekInfo.days.push({
+                    date: dayOfMonth,
+                    dayName: ['السبت','الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة'][dayOfWeek],
+                    dayClass: dayClass,
+                    hours: hours,
+                    dayHours: dayHours,
+                    nightHours: nightHours,
+                    info: dayInfo,
+                    dateKey: dateKey,
+                    isOverflow: isOverflow
+                });
+
+                weekInfo.totalDay += dayHours;
+                weekInfo.totalNight += nightHours;
+                weekInfo.totalHours += hours;
+
+                calendarData[dateKey] = {
+                    date: new Date(currentDate),
+                    dayOfWeek: dayOfWeek,
+                    hours: hours,
+                    dayHours: dayHours,
+                    nightHours: nightHours,
+                    month: month + 1,
+                    info: dayInfo,
+                    isOverflow: isOverflow
+                };
+
+                currentDate.setDate(currentDate.getDate() + 1);
+
+                // Stop AFTER adding the day (so Friday always gets included)
+                if (dayOfWeek === 5) break;
+            }
+
+            // Mark week as spare if it has NO non-overflow training hours
+            // (i.e. all real training days are past the period end)
+            const realHours = weekInfo.days.reduce((sum, d) => {
+                if (!d || d.isOverflow) return sum;
+                return sum + (d.hours || 0);
+            }, 0);
+            weekInfo.isSpare = (realHours === 0 && weekInfo.days.some(d => d && d.isOverflow));
+
+            weekData.push(weekInfo);
+            weekCount++;
+        }
+
+        renderCalendar(startMonth, endMonth);
+        renderHoursTable();
+        updateStats();
+
+        // Re-attach paint listeners after DOM update
+        setTimeout(() => {
+            attachPaintListeners();
+        }, 50);
+    }
+
+    // ======================== updateStats ========================
+    function updateStats() {
+        let totalHours = 0;
+        let dayHours = 0;
+        let nightHours = 0;
+        let trainingDays = 0;
+
+        for (const key in calendarData) {
+            const day = calendarData[key];
+            // استبعد أيام التمديد (overflow) من الإحصائيات — غير مُحتسبة في جدول الساعات
+            if (day.isOverflow) continue;
+
+            totalHours += day.hours;
+            dayHours += day.dayHours;
+            nightHours += day.nightHours;
+
+            if (day.hours > 0) {
+                trainingDays++;
+            }
+        }
+
+        document.getElementById('stat-total').textContent = totalHours;
+        document.getElementById('stat-day').textContent = dayHours;
+        document.getElementById('stat-night').textContent = nightHours;
+        document.getElementById('stat-training').textContent = trainingDays;
+        // عدّ الأسابيع الفعلية فقط (بدون الاحتياط spare)
+        document.getElementById('stat-weeks').textContent = weekData.filter(w => !w.isSpare).length;
+    }
+
+    // ======================== renderCalendar ========================
+    function renderCalendar(startMonth, endMonth) {
+        const thead = document.getElementById('calendarHead');
+        const tbody = document.getElementById('calendarBody');
+        const monthNames = ['يناير','فبراير','مارس','أبريل','مايو','يونيو',
+                           'يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+
+        // Group ALL weeks by the month of their first day (Saturday)
+        let monthWeeks = {};
+        weekData.forEach(week => {
+            const monthKey = week.month;
+            if (!monthWeeks[monthKey]) monthWeeks[monthKey] = [];
+            monthWeeks[monthKey].push(week);
+        });
+
+        // Build header row 1: month names
+        let headerHTML = '<tr><th class="day-name-header">اليوم</th>';
+        for (let m = startMonth; m <= endMonth; m++) {
+            const weeks = monthWeeks[m] || [];
+            if (weeks.length > 0) headerHTML += `<th colspan="${weeks.length}" class="month-header">${monthNames[m]} ${currentYear}</th>`;
+        }
+        // Any overflow weeks whose Saturday landed in a month beyond endMonth
+        for (let m = endMonth + 1; m <= endMonth + 1; m++) {
+            const weeks = monthWeeks[m] || [];
+            if (weeks.length > 0) headerHTML += `<th colspan="${weeks.length}" class="month-header">${monthNames[m] || ''} ${currentYear}</th>`;
+        }
+        headerHTML += '<th class="day-name-header">الإجمالي</th></tr>';
+
+        // Build header row 2: week numbers per month
+        headerHTML += '<tr><th class="day-name-header">الأسبوع</th>';
+        for (let m = startMonth; m <= endMonth + 1; m++) {
+            const weeks = monthWeeks[m] || [];
+            weeks.forEach((week, idx) => { headerHTML += `<th>${idx + 1}</th>`; });
+        }
+        headerHTML += '<th class="day-name-header">الإجمالي</th></tr>';
+        thead.innerHTML = headerHTML;
+
+        // Flat ordered list of all weeks for rendering
+        const allDisplayWeeks = [];
+        for (let m = startMonth; m <= endMonth + 1; m++) {
+            (monthWeeks[m] || []).forEach(w => allDisplayWeeks.push(w));
+        }
+
+        tbody.innerHTML = '';
+        const dayNames = ['السبت','الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة'];
+
+        for (let day = 0; day < 7; day++) {
+            const tr = document.createElement('tr');
+            const dayNameTd = document.createElement('td');
+            dayNameTd.className = 'day-name-header';
+            dayNameTd.textContent = dayNames[day];
+            tr.appendChild(dayNameTd);
+
+            allDisplayWeeks.forEach(week => {
+                const td = document.createElement('td');
+                const dayData = week.days[day];
+
+                if (dayData) {
+                    td.className = dayData.dayClass;
+                    td.dataset.datekey = dayData.dateKey;
+                    if (paintModeActive) td.classList.add('paintable');
+                    td.innerHTML = dayData.info
+                        ? `${dayData.date}<span class="holiday-info">${dayData.info.name}</span>`
+                        : dayData.date;
+                } else {
+                    td.textContent = '-';
+                    td.style.background = '#0d1117';
+                    td.style.color = '#30363d';
+                }
+                tr.appendChild(td);
+            });
+
+            // Empty total cell for day rows (no meaning per day)
+            const emptyTd = document.createElement('td');
+            emptyTd.style.background = '#0d1117';
+            emptyTd.style.color = '#30363d';
+            emptyTd.textContent = '-';
+            tr.appendChild(emptyTd);
+
+            tbody.appendChild(tr);
+        }
+
+        // Compute period totals
+        let grandDay = 0, grandNight = 0, grandTotal = 0;
+        allDisplayWeeks.forEach(week => {
+            grandDay   += week.totalDay;
+            grandNight += week.totalNight;
+            grandTotal += week.totalHours;
+        });
+
+        // Summary rows — each gets a bold total cell at the end
+        const dayTr = document.createElement('tr'); dayTr.className = 'summary-row';
+        let dayHTML = '<td class="day-name-header">نهاري</td>';
+        allDisplayWeeks.forEach(week => { dayHTML += `<td>${week.totalDay > 0 ? week.totalDay : '-'}</td>`; });
+        dayHTML += `<td class="day-name-header" style="font-weight:700;color:#58a6ff">${grandDay}</td>`;
+        dayTr.innerHTML = dayHTML; tbody.appendChild(dayTr);
+
+        const nightTr = document.createElement('tr'); nightTr.className = 'summary-row';
+        let nightHTML = '<td class="day-name-header">ليلي</td>';
+        allDisplayWeeks.forEach(week => { nightHTML += `<td>${week.totalNight > 0 ? week.totalNight : '-'}</td>`; });
+        nightHTML += `<td class="day-name-header" style="font-weight:700;color:#58a6ff">${grandNight}</td>`;
+        nightTr.innerHTML = nightHTML; tbody.appendChild(nightTr);
+
+        const periodTr = document.createElement('tr'); periodTr.className = 'period-summary';
+        let periodHTML = '<td class="day-name-header">إجمالي</td>';
+        allDisplayWeeks.forEach(week => { periodHTML += `<td>${week.totalHours > 0 ? week.totalHours : '-'}</td>`; });
+        periodHTML += `<td class="day-name-header" style="font-weight:700;font-size:13px">${grandTotal}</td>`;
+        periodTr.innerHTML = periodHTML; tbody.appendChild(periodTr);
+
+        // Restore saved cell colors after render
+        restoreCalendarColors();
+    }
+
+    // ======================== renderHoursTable ========================
+    function renderHoursTable() {
+        const thead = document.getElementById('hoursHead');
+        const tbody = document.getElementById('hoursBody');
+
+        const startMonth = currentPeriod === 'jan' ? 0 : 6;
+        const endMonth   = currentPeriod === 'jan' ? 5 : 11;
+        const monthNames = ['يناير','فبراير','مارس','أبريل','مايو','يونيو',
+                            'يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+
+        // ══════════════════════════════════════════════════════
+        // الخطوة 1: جمع الأسابيع وحساب الإجمالي
+        // ══════════════════════════════════════════════════════
+        const monthWeeks = {};
+        weekData.forEach(week => {
+            const k = week.month;
+            if (k < startMonth || k > endMonth) return;
+            if (!monthWeeks[k]) monthWeeks[k] = [];
+            monthWeeks[k].push(week);
+        });
+
+        // كل الأسابيع في العرض (بما فيها الاحتياط)
+        const W = [];
+        for (let m = startMonth; m <= endMonth; m++) {
+            (monthWeeks[m] || []).forEach(w => W.push(w));
+        }
+
+        // الإجمالي من الأسابيع الفعلية فقط (بدون spare)
+        let grandTotal = 0;
+        W.forEach(w => { if (!w.isSpare) grandTotal += w.totalHours; });
+
+        const target70 = Math.round(grandTotal * 0.70);
+        const target30 = grandTotal - target70;
+
+        // ══════════════════════════════════════════════════════
+        // الخطوة 2: حساب اللياقة البدنية الفعلية
+        // سبت(6)+أحد(0)+اثنين(1)+ثلاثاء(2)+أربعاء(3) = 1ساعة/يوم
+        // + صافي طابور السير (ساعات الطابور - 1) لأن اليوم نفسه اتحسب
+        // التحضيري (أسبوع 0 و1) = صفر
+        // ══════════════════════════════════════════════════════
+        const TRAIN_DAYS = new Set([6, 0, 1, 2, 3]);
+        // طابور السير: نفس القيم للفترتين (1-based months)
+        const PARADE_HOURS = { 2:3, 3:3, 4:5, 5:7, 8:3, 9:3, 10:5, 11:7 };
+
+        const fitnessPerWeek = W.map((week, idx) => {
+            if (idx < 2) return 0;
+            if (week.isSpare || week.totalHours === 0) return 0;
+            let h = 0;
+            week.days.forEach(d => {
+                if (!d || !d.dateKey || d.isOverflow) return;
+                const cd = calendarData[d.dateKey];
+                if (!cd || cd.hours === 0) return;
+                if (TRAIN_DAYS.has(cd.dayOfWeek)) {
+                    h += 1;
+                    // آخر ثلاثاء في الشهر: أضف صافي ساعات الطابور
+                    if (cd.dayOfWeek === 2 && isLastTuesday(cd.date, cd.month)) {
+                        const parade = PARADE_HOURS[cd.month] || 0;
+                        if (parade > 0) h += (parade - 1);
+                    }
+                }
+            });
+            return h;
+        });
+        const fitnessTotal = fitnessPerWeek.reduce((a, b) => a + b, 0);
+
+        // ══════════════════════════════════════════════════════
+        // الخطوة 3: حساب التعليم المنضم الفعلي
+        // خميس(4) = 1ساعة/يوم | التحضيري = صفر
+        // ══════════════════════════════════════════════════════
+        const mondassemPerWeek = W.map((week, idx) => {
+            if (idx < 2) return 0;
+            if (week.isSpare || week.totalHours === 0) return 0;
+            let h = 0;
+            week.days.forEach(d => {
+                if (!d || !d.dateKey || d.isOverflow) return;
+                const cd = calendarData[d.dateKey];
+                if (!cd || cd.hours === 0) return;
+                if (cd.dayOfWeek === 4) h += 1;
+            });
+            return h;
+        });
+        const mondassemTotal = mondassemPerWeek.reduce((a, b) => a + b, 0);
+
+        // ══════════════════════════════════════════════════════
+        // الخطوة 4: توزيع ميزانية الـ 70% على المواد الرئيسية
+        // ميزانية باقي المواد = target70 - fitnessTotal
+        // ══════════════════════════════════════════════════════
+        const mainSubjects = subjects.filter(s =>
+            s.type === 'main-subject' && !s.isHeader && s.name !== 'لياقة بدنية');
+        const mainPctSum = mainSubjects.reduce((a, s) => a + s.percent, 0);
+        const mainBudget = target70 - fitnessTotal;
+
+        const mainTotals = {};
+        let mainAllocated = 0;
+        mainSubjects.forEach((s, i) => {
+            if (i < mainSubjects.length - 1) {
+                const t = Math.round(mainBudget * s.percent / mainPctSum);
+                mainTotals[s.name] = t;
+                mainAllocated += t;
+            } else {
+                mainTotals[s.name] = mainBudget - mainAllocated;
+            }
+        });
+
+        // ══════════════════════════════════════════════════════
+        // الخطوة 5: توزيع ميزانية الـ 30% على المواد العامة
+        // ميزانية باقي المواد = target30 - mondassemTotal
+        // الفرق يروح للمواد الأقل نسبة أولاً (1%)
+        // ══════════════════════════════════════════════════════
+        const generalSubjects = subjects.filter(s =>
+            s.type === 'general-subject' && !s.isHeader && s.name !== 'تعليم منضم');
+        const generalSorted = [...generalSubjects].sort((a, b) => a.percent - b.percent);
+        const generalPctSum = generalSorted.reduce((a, s) => a + s.percent, 0);
+        const generalBudget = target30 - mondassemTotal;
+
+        const generalTotals = {};
+        let genAllocated = 0;
+        generalSorted.forEach((s, i) => {
+            if (i < generalSorted.length - 1) {
+                const t = Math.round(generalBudget * s.percent / generalPctSum);
+                generalTotals[s.name] = t;
+                genAllocated += t;
+            } else {
+                generalTotals[s.name] = generalBudget - genAllocated;
+            }
+        });
+
+        // ══════════════════════════════════════════════════════
+        // الخطوة 6: توزيع الساعات بحيث مجموع كل عمود = ساعات الأسبوع بالضبط
+        // ══════════════════════════════════════════════════════
+        const BLACKOUT_SUBJECTS = ['تك عام ومهارة', 'تك خاص'];
+        const BLACKOUT_START  = 2;
+        const BLACKOUT_END    = 11;
+        const INTENSIVE_START = 12;
+
+        const activeIntensiveWeeks = W.slice(INTENSIVE_START)
+            .filter(w => !w.isSpare && w.totalHours > 0).length;
+
+        const iRunning  = { 'تك عام ومهارة': 0, 'تك خاص': 0 };
+        const iRendered = { 'تك عام ومهارة': 0, 'تك خاص': 0 };
+
+        // المواد القابلة للتوزيع (بدون لياقة وتعليم منضم)
+        const mainSubjList = subjects.filter(s =>
+            s.type === 'main-subject' && !s.isHeader && s.name !== 'لياقة بدنية');
+        const genSubjList = subjects.filter(s =>
+            s.type === 'general-subject' && !s.isHeader && s.name !== 'تعليم منضم');
+        const distribSubjects = [...mainSubjList, ...genSubjList];
+        const distribPctSum = distribSubjects.reduce((a, s) => a + s.percent, 0);
+
+        // إجمالي الساعات المتبقية بعد لياقة وتعليم منضم
+        const remainingPerWeek = W.map((week, idx) => {
+            if (week.isSpare || week.totalHours === 0) return 0;
+            return Math.max(0, week.totalHours
+                - (fitnessPerWeek[idx] || 0)
+                - (mondassemPerWeek[idx] || 0));
+        });
+        const totalRemaining = remainingPerWeek.reduce((a, b) => a + b, 0);
+
+        // إجمالي الفترة لكل مادة من الساعات المتبقية
+        const periodTotals = {};
+        let allocSoFar = 0;
+        distribSubjects.forEach((s, i) => {
+            if (i < distribSubjects.length - 1) {
+                const t = Math.round(totalRemaining * s.percent / distribPctSum);
+                periodTotals[s.name] = t;
+                allocSoFar += t;
+            } else {
+                periodTotals[s.name] = totalRemaining - allocSoFar;
+            }
+        });
+
+        // تحديث iRunning targets للـ blackout subjects
+        BLACKOUT_SUBJECTS.forEach(name => { iRunning[name] = 0; iRendered[name] = 0; });
+
+        // حساب قيمة كل مادة في كل أسبوع (قبل تصحيح العمود)
+        function getRawHours(subject, wIdx, week) {
+            if (week.isSpare || week.totalHours === 0) return 0;
+            const name = subject.name;
+            const rem = remainingPerWeek[wIdx];
+            const pTotal = periodTotals[name] || 0;
+
+            if (BLACKOUT_SUBJECTS.includes(name)) {
+                if (wIdx >= BLACKOUT_START && wIdx <= BLACKOUT_END) return 0;
+                if (wIdx >= INTENSIVE_START && activeIntensiveWeeks > 0) {
+                    iRendered[name]++;
+                    const remaining = pTotal - iRunning[name];
+                    const left = activeIntensiveWeeks - (iRendered[name] - 1);
+                    const h = left > 1 ? Math.round(remaining / left) : Math.max(0, remaining);
+                    iRunning[name] += h;
+                    return h;
+                }
+                if (totalRemaining === 0) return 0;
+                return Math.round(rem * pTotal / totalRemaining);
+            }
+            if (totalRemaining === 0) return 0;
+            return Math.round(rem * pTotal / totalRemaining);
+        }
+
+        // بناء مصفوفة القيم لكل مادة
+        const weekVals = {};
+        subjects.forEach(s => { weekVals[s.name] = new Array(W.length).fill(0); });
+
+        W.forEach((week, wIdx) => {
+            weekVals['لياقة بدنية'][wIdx]  = fitnessPerWeek[wIdx] || 0;
+            weekVals['تعليم منضم'][wIdx]   = mondassemPerWeek[wIdx] || 0;
+        });
+
+        distribSubjects.forEach(s => {
+            W.forEach((week, wIdx) => {
+                weekVals[s.name][wIdx] = getRawHours(s, wIdx, week);
+            });
+        });
+
+        // تصحيح كل عمود: مجموع المواد = totalHours بالضبط
+        W.forEach((week, wIdx) => {
+            if (week.isSpare || week.totalHours === 0) return;
+            let colSum = 0;
+            subjects.forEach(s => { if (!s.isHeader) colSum += weekVals[s.name][wIdx]; });
+            const diff = week.totalHours - colSum;
+            if (diff === 0) return;
+            // أضف الفرق لأكبر مادة في هذا الأسبوع (من المواد القابلة للتعديل)
+            let bestName = null, bestVal = -1;
+            distribSubjects.forEach(s => {
+                const inBlackout = BLACKOUT_SUBJECTS.includes(s.name)
+                    && wIdx >= BLACKOUT_START && wIdx <= BLACKOUT_END;
+                if (inBlackout) return;
+                if (weekVals[s.name][wIdx] > bestVal) {
+                    bestVal = weekVals[s.name][wIdx];
+                    bestName = s.name;
+                }
+            });
+            if (bestName) weekVals[bestName][wIdx] = Math.max(0, weekVals[bestName][wIdx] + diff);
+        });
+
+        // ══════════════════════════════════════════════════════
+        // رسم الجدول
+        // ══════════════════════════════════════════════════════
+
+        // هيدر
+        let headerHTML = '<tr><th>المادة</th><th>%</th>';
+        for (let m = startMonth; m <= endMonth; m++) {
+            const wks = (monthWeeks[m] || []).filter(w => !w.isSpare);
+            const spareWks = (monthWeeks[m] || []).filter(w => w.isSpare);
+            if (wks.length > 0) headerHTML += `<th colspan="${wks.length}">${monthNames[m]}</th>`;
+            if (spareWks.length > 0) headerHTML += `<th colspan="${spareWks.length}" style="color:#8b949e;background:rgba(139,148,158,0.08)">احتياط</th>`;
+        }
+        headerHTML += '<th>إجمالي الفترة</th></tr><tr><th></th><th></th>';
+        for (let m = startMonth; m <= endMonth; m++) {
+            (monthWeeks[m] || []).forEach((w, i) => {
+                if (w.isSpare) headerHTML += `<th style="color:#8b949e">✦</th>`;
+                else headerHTML += `<th>${i + 1}</th>`;
+            });
+        }
+        headerHTML += '<th></th></tr>';
+        thead.innerHTML = headerHTML;
+
+        tbody.innerHTML = '';
+        subjects.forEach(subject => {
+            if (subject.isHeader) {
+                const row = document.createElement('tr');
+                row.className = subject.type;
+                let rowHTML = `<td>${subject.name}</td><td>-</td>`;
+                W.forEach(() => { rowHTML += '<td>-</td>'; });
+                rowHTML += '<td>-</td>';
+                row.innerHTML = rowHTML;
+                tbody.appendChild(row);
+                return;
+            }
+
+            const row = document.createElement('tr');
+            row.className = subject.type;
+            const vals = weekVals[subject.name] || new Array(W.length).fill(0);
+            const periodTotal = vals.reduce((a, b) => a + b, 0);
+            let rowHTML = `<td>${subject.name}</td><td>${subject.percent > 0 ? subject.percent + '%' : '-'}</td>`;
+            vals.forEach(h => { rowHTML += `<td>${h}</td>`; });
+            rowHTML += `<td>${periodTotal}</td>`;
+            row.innerHTML = rowHTML;
+            tbody.appendChild(row);
+        });
+
+        // صف الإجمالي
+        const totalRow = document.createElement('tr');
+        totalRow.className = 'total-row';
+        let totalHTML = '<td>الإجمالي</td><td>100%</td>';
+        W.forEach(w => { totalHTML += `<td>${w.totalHours}</td>`; });
+        totalHTML += `<td>${grandTotal}</td>`;
+        totalRow.innerHTML = totalHTML;
+        tbody.appendChild(totalRow);
+    }
+
+    // ======================== HELPERS ========================
+    function isLastTuesday(date, month) {
+        // إيجاد آخر ثلاثاء في الشهر
+        const year = date instanceof Date ? date.getFullYear() : new Date(date).getFullYear();
+        const daysInMonth = new Date(year, month, 0).getDate();
+        let lastTuesdayDay = -1;
+        for (let d = 1; d <= daysInMonth; d++) {
+            if (new Date(year, month - 1, d).getDay() === 2) lastTuesdayDay = d;
+        }
+        // مقارنة اليوم فقط (بدون الوقت)
+        const checkDate = date instanceof Date ? date : new Date(date);
+        return checkDate.getDate() === lastTuesdayDay
+            && checkDate.getMonth() === month - 1
+            && checkDate.getFullYear() === year;
+    }
+
+    function getParadeHours(month) {
+        // يناير-يونيو: فبراير=2, مارس=3, أبريل=4, مايو=5
+        // يوليو-ديسمبر: أغسطس=8, سبتمبر=9, أكتوبر=10, نوفمبر=11
+        const paradeMonths = { 2:3, 3:3, 4:5, 5:7, 8:3, 9:3, 10:5, 11:7 };
+        return paradeMonths[month] || 0;
+    }
+    // تسجيل الـ Service Worker عشان الكروم يشيل علامة المتصفح
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+            .then(reg => console.log('Service Worker Registered!'))
+            .catch(err => console.log('Service Worker Failed', err));
+    });
+}
+</script>
+</body>
+</html>
