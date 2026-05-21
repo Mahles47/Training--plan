@@ -2686,6 +2686,15 @@
         const paradeMonths = { 2:3, 3:3, 4:5, 5:7, 8:3, 9:3, 10:5, 11:7 };
         return paradeMonths[month] || 0;
     }
+    // تسجيل الـ Service Worker عشان الكروم يشيل علامة المتصفح
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+            .then(reg => console.log('Service Worker Registered!'))
+            .catch(err => console.log('Service Worker Failed', err));
+    });
+}
+
 </script>
 </body>
 </html>
