@@ -4,16 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>نظام التخطيط التدريبي</title>
-    <meta name="theme-color" content="#161b22">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎯</text></svg>">
-
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎯</text></svg>">
-
-<link rel="manifest" href="manifest.json">
-
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -1269,19 +1259,14 @@
             <div class="sc-sub">ساعة في الفترة</div>
         </div>
         <div class="stat-card orange">
-            <div class="sc-label">أيام التدريب الفعلية</div>
+            <div class="sc-label">الساعات النهارية</div>
             <div class="sc-value" id="stat-training">—</div>
-            <div class="sc-sub">يوم عمل</div>
-        </div>
-        <div class="stat-card red">
-            <div class="sc-label">الأيام خارج التدريب</div>
-            <div class="sc-value" id="stat-off">—</div>
-            <div class="sc-sub">إجازات ومهام</div>
+            <div class="sc-sub">ساعة نهاري</div>
         </div>
         <div class="stat-card green">
-            <div class="sc-label">الأسابيع</div>
+            <div class="sc-label">الساعات الليلية</div>
             <div class="sc-value" id="stat-weeks">—</div>
-            <div class="sc-sub">أسبوع تدريبي</div>
+            <div class="sc-sub">ساعة ليلي</div>
         </div>
     </div>
 
@@ -2244,21 +2229,21 @@
 
     // ======================== updateStats ========================
     function updateStats() {
-        let totalHours = 0;
-        let trainingDays = 0;
-        let offDays = 0;
+        let totalHours = 0, dayHours = 0, nightHours = 0;
 
-        for (const key in calendarData) {
-            const day = calendarData[key];
-            totalHours += day.hours;
-            if (day.hours > 0) trainingDays++;
-            if (day.info && day.info.type !== 'prep') offDays++;
-        }
+        weekData.forEach(week => {
+            if (week.isSpare) return;
+            totalHours += week.totalHours;
+            dayHours   += week.totalDay;
+            nightHours += week.totalNight;
+        });
 
-        document.getElementById('stat-total').textContent = totalHours;
-        document.getElementById('stat-training').textContent = trainingDays;
-        document.getElementById('stat-off').textContent = offDays;
-        document.getElementById('stat-weeks').textContent = weekData.length;
+        document.getElementById('stat-total').textContent    = totalHours;
+        document.getElementById('stat-training').textContent = dayHours;
+        document.getElementById('stat-weeks').textContent    = nightHours;
+        // stat-off removed — guard in case old code references it
+        const statOff = document.getElementById('stat-off');
+        if (statOff) statOff.textContent = '';
     }
 
     // ======================== renderCalendar ========================
@@ -2533,26 +2518,28 @@
         const totalRemaining = remainingPerWeek.reduce((a, b) => a + b, 0);
 
         // إجمالي الفترة لكل مادة من الساعات المتبقية
+        // نضمن إن كل مادة تاخد على الأقل 1 ساعة
         const periodTotals = {};
         let allocSoFar = 0;
         distribSubjects.forEach((s, i) => {
             if (i < distribSubjects.length - 1) {
-                const t = Math.round(totalRemaining * s.percent / distribPctSum);
+                const t = Math.max(1, Math.round(totalRemaining * s.percent / distribPctSum));
                 periodTotals[s.name] = t;
                 allocSoFar += t;
             } else {
-                periodTotals[s.name] = totalRemaining - allocSoFar;
+                // آخر مادة تأخذ الباقي (مع ضمان ≥ 1)
+                periodTotals[s.name] = Math.max(1, totalRemaining - allocSoFar);
             }
         });
 
-        // تحديث iRunning targets للـ blackout subjects
-        BLACKOUT_SUBJECTS.forEach(name => { iRunning[name] = 0; iRendered[name] = 0; });
+        // حساب عدد الأسابيع النشطة (غير spare وغير صفر)
+        const activeWeeks = W.filter(w => !w.isSpare && w.totalHours > 0);
+        const activeWeekCount = activeWeeks.length;
 
         // حساب قيمة كل مادة في كل أسبوع (قبل تصحيح العمود)
         function getRawHours(subject, wIdx, week) {
             if (week.isSpare || week.totalHours === 0) return 0;
             const name = subject.name;
-            const rem = remainingPerWeek[wIdx];
             const pTotal = periodTotals[name] || 0;
 
             if (BLACKOUT_SUBJECTS.includes(name)) {
@@ -2565,11 +2552,20 @@
                     iRunning[name] += h;
                     return h;
                 }
+                // قبل الحظر: بالتناسب مع الأسبوع
+                const rem = remainingPerWeek[wIdx];
                 if (totalRemaining === 0) return 0;
                 return Math.round(rem * pTotal / totalRemaining);
             }
-            if (totalRemaining === 0) return 0;
-            return Math.round(rem * pTotal / totalRemaining);
+
+            // باقي المواد: توزيع متساوٍ على الأسابيع النشطة
+            // هذا يضمن إن المواد ذات النسبة الصغيرة (1%) تاخد ساعات موزعة
+            if (activeWeekCount === 0) return 0;
+            const basePerWeek = Math.floor(pTotal / activeWeekCount);
+            const remainder = pTotal % activeWeekCount;
+            // الأسابيع الأولى تاخد basePerWeek + 1 لو في remainder
+            const activeIdx = activeWeeks.findIndex(w => w === week);
+            return basePerWeek + (activeIdx < remainder ? 1 : 0);
         }
 
         // بناء مصفوفة القيم لكل مادة
@@ -2686,34 +2682,6 @@
         const paradeMonths = { 2:3, 3:3, 4:5, 5:7, 8:3, 9:3, 10:5, 11:7 };
         return paradeMonths[month] || 0;
     }
-    // تسجيل الـ Service Worker عشان الكروم يشيل علامة المتصفح
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js')
-            .then(reg => console.log('Service Worker Registered!'))
-            .catch(err => console.log('Service Worker Failed', err));
-    });
-}
-
-</script>
-</body>
-</html>
-   }
-
-    function getParadeHours(month) {
-        // يناير-يونيو: فبراير=2, مارس=3, أبريل=4, مايو=5
-        // يوليو-ديسمبر: أغسطس=8, سبتمبر=9, أكتوبر=10, نوفمبر=11
-        const paradeMonths = { 2:3, 3:3, 4:5, 5:7, 8:3, 9:3, 10:5, 11:7 };
-        return paradeMonths[month] || 0;
-    }
-    // تسجيل الـ Service Worker عشان الكروم يشيل علامة المتصفح
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js')
-            .then(reg => console.log('Service Worker Registered!'))
-            .catch(err => console.log('Service Worker Failed', err));
-    });
-}
 </script>
 </body>
 </html>
