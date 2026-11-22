@@ -1408,7 +1408,7 @@
 <div class="topbar">
     <div class="topbar-brand">
         <div class="brand-icon">🎯</div>
-        <h1>نظام التخطيط التدريبي</h1>
+        <h1>برنامج التدريب</h1>
     </div>
 
     <div class="topbar-controls">
@@ -1547,25 +1547,9 @@
         <div class="pt-icon" style="background:var(--col-exam)">🟡</div>
         <span class="pt-label">اختبار</span>
     </button>
-    <button class="paint-tool" data-type="maint" onclick="selectPaintType('maint')" title="صيانة">
-        <div class="pt-icon" style="background:var(--col-maint)">⚫</div>
-        <span class="pt-label">صيانة</span>
-    </button>
-    <button class="paint-tool" data-type="other" onclick="selectPaintType('other')" title="أخرى">
-        <div class="pt-icon" style="background:var(--col-other)">🟣</div>
-        <span class="pt-label">أخرى</span>
-    </button>
 
     <div class="paint-divider"></div>
-
-    <button class="paint-tool" data-type="erase" onclick="selectPaintType('erase')" title="مسح">
-        <div class="pt-icon" style="background:#30363d">🗑️</div>
-        <span class="pt-label">مسح</span>
-    </button>
-
-    <div class="paint-divider"></div>
-
-    <!-- March mode button -->
+<!-- March mode button -->
     <button class="paint-tool" id="marchModeBtn" onclick="toggleMarchMode()" title="تحديد طابور السير">
         <div class="pt-icon" style="background:#b8960c">🪖</div>
         <span class="pt-label">طابور</span>
@@ -1582,6 +1566,13 @@
     <button class="paint-add-btn" onclick="openCustomTypePopup()" title="إضافة نوع مخصص">
         <div class="pt-icon">＋</div>
         <span class="pt-label">نوع جديد</span>
+    </button>
+
+    <div class="paint-divider"></div>
+
+    <button class="paint-tool" data-type="erase" onclick="selectPaintType('erase')" title="مسح">
+        <div class="pt-icon" style="background:#30363d">🗑️</div>
+        <span class="pt-label">مسح</span>
     </button>
 </div>
 
