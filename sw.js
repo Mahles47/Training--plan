@@ -1,7 +1,7 @@
 // برنامج التدريب — offline support
 // v3: network-first for same-origin (HTML/manifest/icons) so updates appear immediately;
 // cache-first only for third-party CDN assets.
-const CACHE = 'training-planner-v3';
+const CACHE = 'training-planner-v4';
 const PRECACHE = ['./', 'index.html', 'manifest.json', 'icon-192.png', 'icon-512.png'];
 
 self.addEventListener('install', e => {
@@ -17,6 +17,11 @@ self.addEventListener('activate', e => {
         caches.keys()
             .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
             .then(() => self.clients.claim())
+            // Pages pinned by the old cache-first SW have no controllerchange
+            // listener, so reload controlled pages once on takeover: they then
+            // load fresh HTML from the network.
+            .then(() => self.clients.matchAll({ type: 'window' }))
+            .then(clients => clients.forEach(c => c.navigate(c.url)))
     );
 });
 
