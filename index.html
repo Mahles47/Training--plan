@@ -1395,6 +1395,9 @@
 
     <!-- PWA -->
     <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="theme-color" content="#161b22">
     <meta name="theme-color" content="#1a3a5c">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -3133,6 +3136,14 @@
             navigator.serviceWorker.register('sw.js')
                 .then(reg => console.log('SW registered:', reg.scope))
                 .catch(err => console.log('SW error:', err));
+        });
+        // When a new service worker takes over an already-open page, reload once
+        // so the user immediately sees the fresh version instead of a cached one.
+        let swRefreshing = false;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (swRefreshing) return;
+            swRefreshing = true;
+            location.reload();
         });
     }
 
