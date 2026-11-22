@@ -2454,7 +2454,7 @@
         let endMonth = currentPeriod === 'jan' ? 5 : 11;
 
         // Safe search: find first Saturday in startMonth — max 7 iterations, never infinite
-        let startDate = new Date(currentYear, startMonth, 1);
+        let startDate = new Date(currentYear, startMonth, 1, 12); // noon: DST-safe day math
         let safetyCounter = 0;
         while (startDate.getDay() !== 6 && safetyCounter < 7) {
             startDate.setDate(startDate.getDate() + 1);
@@ -2469,7 +2469,7 @@
         // Weeks run Saturday→Friday, so:
         //   1. Go back to the Saturday of that week (or stay if already Saturday).
         //   2. Add 6 days to land on Friday.
-        let lastDayOfPeriod = new Date(currentYear, endMonth + 1, 0);
+        let lastDayOfPeriod = new Date(currentYear, endMonth + 1, 0, 12); // noon: DST-safe day math
         let endDate = new Date(lastDayOfPeriod);
         // Step back to Saturday (day 6) of the same week
         while (endDate.getDay() !== 6) {
