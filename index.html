@@ -1404,6 +1404,138 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="برنامج التدريب">
     <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAIAAADdvvtQAAAC8klEQVR4nO3boW4UYRSA0S1B9QUI4NjgqENVgOkTgMWTVGJwNEgMsgkeC0+AAVFVVxyphIYXqEZss2lwO9+0O+2eo9bcmd3k63TEf7f+vHs0g6HurPsLcLMJiERAJAIiERCJgEgERCIgEgGRCIhEQCQCIhEQiYBIBEQiIBIBkQiIREAkAiIREImASAREIiCSrQe7r9b9HbjBPIFIBEQiIBIBkQiIREAkAiIREImASAREIiASAZEIiERAJAIiERCJgEgERCIgEgGRCIhEQCR3x7rQ8d7R4Nnz/ZPtwx2zVz37n6ffdvtFRtsLO947uv/+dNjs6d/z+b1ts1c9e9nZwXyUgEZ7Ai08fvN51ZFfHy8Kfvjy7aqzv798WHz4vvtk1dnnRz8XH84O5qvOLv9U1vV7p8M7EImASAREIiASAZEIiERAJAIiERCJgEgERCIgEgGRCIhEQCQCIhEQiYBIBEQiIJKRD9UvT4wPUE6ML0/IDzB4mWS2vt87HaOt9fz4+mmU63Btnr143S8y2hNo+3DHXtjEZy87O5jPZrdrL2xdO1blvmUfrdx3OrxEkwiIREAkAiIREImASAREIiASAZEIiERAJAIiERCJgEgERCIgEgGRCIhEQCQCIpnQXti6dqzKfcs+2gRPyA9gL2xz2QszO9xYe2HegUgERCIgEgGRCIhEQCQCIhEQiYBIBEQiIBIBkQiIREAkAiIREImASAREIiASAZEIiERAJPbCNpe9MLPD2QtjEgREIiASAZEIiERAJAIiERCJgEgERCIgEgGRCIhEQCQCIhEQiYBIBEQiIBIBkQiIREAk9sI2l70ws8PZC2MSBEQiIBIBkQiIREAkAiIREImASAREIiASAZEIiERAJAIiERCJgEgERCIgEgGRCIhEQCSjrfXMLjZFBtk/MXsds1dgtMVCNpN/YSQCIhEQiYBIBEQiIBIBkQiIREAkAiIREImASAREIiASAZEIiERAJAIiERCJgEgERCIgkn9R8eVE+/GbxAAAAABJRU5ErkJggg==">
+<style id="mobile-layout">/* Phone-only presentation layer. Training and export logic remains unchanged. */
+.mobile-only { display:none; }
+@media screen and (max-width:768px) {
+ :root { --toolbar-height:110px; }
+ body { padding-bottom:82px; }
+ .topbar { height:110px; padding:10px 12px; gap:8px; background:linear-gradient(145deg,#172536,#111a25); border-bottom-color:#2d4054; box-shadow:0 8px 30px #0003; }
+ .topbar-brand {height:32px;}
+ .topbar-brand h1 {font-size:15px;letter-spacing:0;}
+ .topbar-brand .brand-icon {width:30px;height:30px;border-radius:10px;}
+ .mobile-only {display:flex;}
+ .mobile-header-actions {margin-inline-start:auto;gap:6px;align-items:center;}
+ .mobile-icon-btn {min-width:38px;height:34px;border:1px solid #3a4d63;border-radius:10px;background:#243549;color:#e6edf3;font-family:inherit;font-size:12px;align-items:center;justify-content:center;gap:6px;padding:0 10px;cursor:pointer;}
+ .mobile-help {min-width:34px;padding:0;font-size:16px;}
+ body[data-mobile-view=hours] {--toolbar-height:58px;}
+ body[data-mobile-view=hours] .topbar {height:58px;}
+ body[data-mobile-view=hours] .topbar-controls {display:none;}
+ body[data-mobile-view=hours] .main-content {margin-top:58px;}
+ body[data-mobile-view=hours] .stats-row {top:58px;}
+ .topbar-controls {gap:7px;overflow:visible;direction:rtl;height:42px;}
+ .ctrl-group {height:40px;padding:3px 8px;background:#0e1824;border-color:#334459;border-radius:11px;gap:6px;}
+ .ctrl-group label {font-size:10px;color:#9aaec4;}
+ .ctrl-group input,.ctrl-group select {font-size:12px;height:32px;}
+ .ctrl-group input[type=number] {width:52px!important;}
+ .topbar-controls .ctrl-group:nth-child(2) {flex:1;min-width:0;}
+ .ctrl-group select {width:100%;min-width:0;}
+ .topbar-controls>.print-btn,.topbar-controls>.success {display:none;}
+ .topbar-controls>.primary {width:42px;height:40px;min-width:42px;justify-content:center;padding:0;border-radius:11px;background:linear-gradient(145deg,#4d98fd,#2764ca);box-shadow:0 4px 14px #388bfd30;}
+ .generate-desktop {display:none;}
+ .generate-phone {display:inline;font-size:18px;}
+ .main-content {margin-top:110px;padding:0 12px 90px;}
+ .stats-row {position:sticky;top:110px;z-index:900;display:flex;align-items:center;justify-content:space-between;gap:0;height:44px;margin:0 -12px 0;padding:0 15px;background:#0e1824f5;border-bottom:1px solid #293b50;backdrop-filter:blur(16px);}
+ .stat-card {display:flex;align-items:center;gap:7px;border:0;background:none;border-radius:0;padding:0;overflow:visible;}
+ .stat-card::before,.stat-card .sc-sub {display:none;}
+ .stat-card:hover {transform:none;box-shadow:none;}
+ .stat-card .sc-label {font-size:0;margin:0;letter-spacing:0;}
+ .stat-card .sc-label::after {font-size:12px;color:#b6c8db;}
+ .stat-card.blue .sc-label::after {content:'المجموع';}
+ .stat-card.orange .sc-label::after {content:'ن';color:#f4b06f;}
+ .stat-card.green .sc-label::after {content:'ل';color:#6ed6b1;}
+ .stat-card .sc-value {font-size:19px;line-height:1;margin:0;font-variant-numeric:tabular-nums;}
+ .stat-card.blue .sc-value {color:#71b3ff;}
+ .stat-card.orange .sc-value {color:#f7c99e;}
+ .stat-card.green .sc-value {color:#91e2c9;}
+ .mobile-tabs {display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:14px 0 12px;}
+ .mobile-tab {position:relative;display:flex;align-items:center;justify-content:center;gap:7px;height:64px;padding:8px;border:1px solid #2e3b4c;border-radius:14px;background:linear-gradient(145deg,#1d2938,#17202c);color:#aebdce;font-family:inherit;font-weight:700;font-size:12px;cursor:pointer;}
+ .mobile-tab .tab-icon {font-size:20px;line-height:1;}
+ .mobile-tab[aria-selected=true] {color:#e8f3ff;background:linear-gradient(135deg,#214c7a,#19304b);border-color:#4a98eb;box-shadow:0 4px 20px #237add18,inset 0 1px 0 #ffffff0c;}
+ .mobile-tab[aria-selected=true]::after {content:'';position:absolute;bottom:6px;width:18px;height:3px;border-radius:4px;background:#75bdff;}
+ .legend-bar {display:none;}
+ .mobile-view-note {display:flex;align-items:center;justify-content:space-between;margin:0 2px 8px;color:#8da1b8;font-size:10px;}
+ .mobile-view-note strong {color:#c3d1e2;font-size:11px;}
+ body[data-mobile-view=hours] #exportArea,body[data-mobile-view=agenda] .hours-section {display:none;}
+ .hours-section {margin-top:0;}
+ .hours-header {padding:12px;}
+ .hours-header h2 {font-size:13px;}
+ .h-badge {font-size:9px;}
+ .calendar-wrapper {margin-bottom:0;border-color:#33465c;}
+ .mobile-palette-toggle {position:fixed;left:12px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:960;display:flex;align-items:center;justify-content:center;gap:6px;width:52px;height:52px;border:1px solid #60768e;border-radius:16px;background:linear-gradient(145deg,#2b3e55,#192738);color:white;box-shadow:0 6px 24px #0007;cursor:pointer;}
+ .mobile-palette-toggle .brush-dot {width:15px;height:15px;border:2px solid #fff;border-radius:5px;background:var(--col-holiday);box-shadow:0 0 12px #ffffff20;}
+ .mobile-palette-toggle .palette-chevron {font-size:21px;}
+ .mobile-palette-toggle[aria-expanded=true] .palette-chevron {transform:rotate(180deg);}
+ .paint-toolbar {display:none;left:72px;right:12px;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:none;width:auto;max-width:none;min-height:74px;border-radius:16px;padding:8px;gap:5px;box-shadow:0 6px 30px #0008;border-color:#4c6581;background:#182536f5;}
+ body.mobile-palette-open .paint-toolbar {display:flex;}
+ .paint-toolbar>* {flex-shrink:0;}
+ .paint-toolbar .paint-label {display:none;}
+ .paint-mode-toggle {min-height:42px;padding:7px 10px;}
+ .paint-tool,.paint-add-btn {min-height:52px;min-width:48px;padding:6px 8px;}
+ .paint-tool .pt-label,.paint-add-btn .pt-label {font-size:10px;}
+ body[data-mobile-view=hours] .paint-toolbar,body[data-mobile-view=hours] .mobile-palette-toggle {display:none!important;}
+ .mobile-popover {display:none;position:fixed;top:52px;left:12px;z-index:1050;min-width:165px;padding:7px;background:#1b2b3e;border:1px solid #405977;border-radius:14px;box-shadow:0 12px 40px #0008;}
+ .mobile-popover.open {display:block;}
+ .mobile-popover button {display:flex;width:100%;align-items:center;gap:10px;padding:12px;border:0;border-radius:9px;background:none;color:#e6edf3;font:13px 'Cairo',sans-serif;text-align:right;cursor:pointer;}
+ .mobile-popover button:hover {background:#2a405b;}
+ #mobileGuide {left:12px;right:12px;top:56px;max-height:60vh;overflow:auto;padding:14px;}
+ #mobileGuide .legend-bar {display:flex;margin:0;padding:0;border:0;background:none;gap:14px;}
+ #installBanner {width:calc(100vw - 24px)!important;max-width:440px!important;padding:12px!important;bottom:calc(80px + env(safe-area-inset-bottom,0px))!important;gap:8px!important;}
+ #installBanner>div {flex:1;min-width:0;}
+ #installBanner button {min-height:36px;flex-shrink:0;}
+ .toast {bottom:100px;max-width:calc(100vw - 32px);white-space:normal;}
+}
+@media screen and (min-width:769px) { .generate-phone {display:none;} }
+@media print { .mobile-only {display:none!important;} }
+@media screen and (max-width:768px) {body.mobile-exporting #exportArea,body.mobile-exporting .hours-section {display:block!important;}}
+@media screen and (max-width:768px) {
+ .topbar-brand .brand-icon {font-size:0;position:relative;background:linear-gradient(145deg,#398df6,#2548a0);box-shadow:inset 0 1px 0 #ffffff30;}
+ .topbar-brand .brand-icon::before {content:'';width:15px;height:15px;border:1.5px solid #e3f0ff;border-radius:5px;box-shadow:inset 0 4px 0 #e3f0ff35;}
+ .topbar-brand .brand-icon::after {content:'';position:absolute;width:3px;height:3px;background:#dbeeff;box-shadow:5px 0 #dbeeff,0 5px #dbeeff,5px 5px #dbeeff;top:12px;left:10px;border-radius:1px;}
+ .mobile-palette-toggle {direction:ltr;}
+ .mobile-tabs .tab-icon {font-family:Arial,sans-serif;}
+ .mobile-export-label {direction:rtl;}
+}
+@media screen and (max-width:768px) {
+ .topbar-controls>.primary {font-size:0;}
+ .topbar-controls>.primary::before {content:'▶';font-family:Arial,sans-serif;font-size:22px;color:#fff;}
+ .topbar-controls>.primary .btn-text {display:none;}
+}
+/* Refined phone palette: ink, sapphire, champagne and jade. */
+@media screen and (max-width:768px) {
+ body {background:radial-gradient(ellipse at 85% 8%,#162c482b,transparent 45%),#090f18;}
+ .topbar {background:linear-gradient(120deg,#172638 0%,#112034 58%,#192d46 100%);border-bottom:1px solid #5a7c9e35;box-shadow:0 8px 30px #02070e66,inset 0 1px 0 #ffffff09;}
+ .topbar-brand h1 {color:#f2f5fb;text-shadow:0 1px 8px #ffffff0c;}
+ .topbar-brand .brand-icon {background:linear-gradient(145deg,#82baff 0%,#3c7be3 44%,#293d91 100%);box-shadow:inset 0 1px 0 #e2f0ff80,0 3px 12px #336de050;}
+ .mobile-icon-btn {background:linear-gradient(145deg,#2a3d52,#1c2c40);border-color:#91b4d630;box-shadow:inset 0 1px 0 #d5e8ff0c;color:#dbe8f7;}
+ .ctrl-group {background:linear-gradient(150deg,#0d1929,#14243a);border-color:#648cb838;box-shadow:inset 0 2px 8px #0003;}
+ .ctrl-group label {color:#829ab8;}
+ .topbar-controls>.primary {background:linear-gradient(145deg,#8cc7ff 0%,#468de9 43%,#325bc4 100%);border:1px solid #a8d7ff6b;box-shadow:0 4px 16px #3b86ee40,inset 0 1px 0 #f6fbff75;}
+ .stats-row {background:linear-gradient(90deg,#10242bfa,#122033fa 50%,#14243bfa);border-bottom-color:#5b7c9d36;box-shadow:0 3px 18px #02070e30;}
+ .stat-card.blue .sc-value {color:#91c6ff;text-shadow:0 0 20px #5ba5ff25;}
+ .stat-card.orange .sc-value {color:#edcca1;text-shadow:0 0 20px #e9b76e15;}
+ .stat-card.green .sc-value {color:#8bd8c4;text-shadow:0 0 20px #66dfb820;}
+ .stat-card.orange .sc-label::after {color:#bfa78a;}
+ .stat-card.green .sc-label::after {color:#77ac9e;}
+ .mobile-tab {background:linear-gradient(135deg,#26354a 0%,#1b283a 55%,#152132 100%);border-color:#829cb826;box-shadow:inset 0 1px 0 #e1edff0a,0 5px 15px #0002;color:#a8bad1;}
+ .mobile-tab[aria-selected=true] {background:linear-gradient(125deg,#395d8b 0%,#234876 48%,#1b3153 100%);border-color:#8fc2ff80;box-shadow:inset 0 1px 0 #c6e5ff25,inset 0 0 18px #4f88d010,0 5px 22px #2671c226;color:#f0f6ff;}
+ .mobile-tab[aria-selected=true]::after {background:#b1d9ff;box-shadow:0 0 9px #7cbaff75;}
+ .mobile-tab[aria-selected=true] .tab-icon {color:#b8d8ff;}
+ .mobile-view-note {color:#647b98;}
+ .mobile-view-note strong {color:#a7bad2;}
+ .calendar-wrapper,.hours-section {border-color:#6686aa40;box-shadow:0 8px 28px #02060c40,inset 0 1px 0 #ffffff05;}
+ .hours-header {background:linear-gradient(110deg,#1c2a3c,#1a2c43);border-bottom-color:#5e7da236;}
+ .h-badge {background:#315a8430;color:#9cbfe9;border-color:#6089b64d;}
+ .mobile-palette-toggle {background:linear-gradient(140deg,#456180 0%,#293f5c 52%,#1b2c43 100%);border-color:#adc9e666;box-shadow:inset 0 1px 0 #d7ebff26,0 5px 24px #0009;}
+ .paint-toolbar {background:linear-gradient(120deg,#24384ff5,#18283df8);border-color:#89afd259;box-shadow:inset 0 1px 0 #e0f0ff14,0 8px 28px #0009;}
+ .paint-mode-toggle {background:#0f1d2e;border-color:#718fb43b;}
+ .paint-mode-toggle.active {background:#1d4369;border-color:#88bef88f;color:#c7e4ff;}
+ .paint-tool.active {border-color:#bddefa;background:linear-gradient(150deg,#4b70922b,#aac8e818);box-shadow:inset 0 0 12px #9bc7f010;}
+ .mobile-popover {background:linear-gradient(140deg,#263b55,#17283e);border-color:#89afd25c;box-shadow:inset 0 1px 0 #dceeff12,0 14px 40px #0009;}
+}
+@media screen and (max-width:768px) {
+ .topbar-controls>.primary::before {content:'◀';transform:translateX(-1px);}
+}
+</style>
 </head>
 <body>
 
@@ -1412,6 +1544,7 @@
     <div class="topbar-brand">
         <div class="brand-icon">🎯</div>
         <h1>برنامج التدريب</h1>
+<div class="mobile-header-actions mobile-only"><button id="mobileGuideToggle" class="mobile-icon-btn mobile-help" aria-label="دليل الألوان" aria-expanded="false" aria-controls="mobileGuide">؟</button><button id="mobileExportToggle" class="mobile-icon-btn" aria-expanded="false" aria-controls="mobileExport">↗ <span>تصدير</span></button></div>
     </div>
 
     <div class="topbar-controls">
@@ -1426,7 +1559,7 @@
                 <option value="jul">يوليو — ديسمبر</option>
             </select>
         </div>
-        <button class="topbar-btn primary" onclick="generateCalendar()">🔄 <span class="btn-text">توليد</span></button>
+        <button class="topbar-btn primary" onclick="generateCalendar()" aria-label="توليد الأجندة">🔄 <span class="btn-text">توليد</span></button>
         <button class="topbar-btn print-btn" onclick="exportPDF()">📄 <span class="btn-text">PDF</span></button>
         <button class="topbar-btn success" onclick="exportExcel()">📊 <span class="btn-text">Excel</span></button>
     </div>
@@ -1458,6 +1591,10 @@
         </div>
     </div>
 
+<div class="mobile-tabs mobile-only" role="tablist" aria-label="عرض التدريب">
+<button class="mobile-tab" id="agendaTab" role="tab" aria-controls="exportArea" data-view="agenda" aria-selected="true"><span class="tab-icon">▦</span><span>الأجندة</span></button>
+<button class="mobile-tab" id="hoursTab" role="tab" aria-controls="hoursSection" data-view="hours" aria-selected="false"><span class="tab-icon">▥</span><span>جدول ربط الساعات</span></button>
+</div><div class="mobile-view-note mobile-only"><strong id="mobileViewTitle">الأجندة الكاملة</strong><span>اسحب الجدول يمينًا ويسارًا ↔</span></div>
     <!-- LEGEND -->
     <div class="legend-bar">
         <div class="legend-item"><div class="legend-dot" style="background:var(--col-normal);border:1px solid var(--border)"></div><span>تدريب عادي</span></div>
@@ -1481,7 +1618,7 @@
     </div>
 
     <!-- HOURS TABLE -->
-    <div class="hours-section">
+    <div class="hours-section" id="hoursSection">
         <div class="hours-header">
             <h2>📊 جدول ربط الساعات</h2>
             <span class="h-badge">الموازنة الذكية</span>
@@ -1527,6 +1664,9 @@
     </div>
 </div>
 
+<div id="mobileExport" class="mobile-popover mobile-only"><button onclick="mobileExportPDF()">📄 <span>تصدير PDF</span></button><button onclick="exportExcel()">📊 <span>تصدير Excel</span></button></div>
+<div id="mobileGuide" class="mobile-popover mobile-only" aria-label="دليل الألوان"></div>
+<button id="mobilePaletteToggle" class="mobile-palette-toggle mobile-only" aria-label="أدوات الدهان" aria-expanded="false"><span class="brush-dot"></span><span class="palette-chevron">›</span></button>
 <!-- PAINT TOOLBAR -->
 <div class="paint-toolbar">
     <span class="paint-label">🎨 وضع الدهان</span>
@@ -3209,5 +3349,90 @@
     `;
     document.head.appendChild(style);
     </script>
+<script>
+// Mobile navigation is stored separately from all training data.
+document.addEventListener('DOMContentLoaded', () => {
+    const body = document.body;
+    const exportMenu = document.getElementById('mobileExport');
+    const guide = document.getElementById('mobileGuide');
+    const paletteToggle = document.getElementById('mobilePaletteToggle');
+    const toolbar = document.querySelector('.paint-toolbar');
+    const tabs = document.querySelectorAll('.mobile-tab');
+    const note = document.getElementById('mobileViewTitle');
+    let lastView = 'agenda';
+    try { if (localStorage.getItem('training_mobile_view') === 'hours') lastView = 'hours'; } catch (_) {}
+    function setView(view, save = true) {
+        body.dataset.mobileView = view;
+        tabs.forEach(tab => tab.setAttribute('aria-selected', String(tab.dataset.view === view)));
+        note.textContent = view === 'agenda' ? 'الأجندة الكاملة' : 'توزيع ساعات التدريب';
+        exportMenu.classList.remove('open');
+        document.getElementById('mobileExportToggle').setAttribute('aria-expanded', 'false');
+        if (save) { try { localStorage.setItem('training_mobile_view', view); } catch (_) {} }
+    }
+    tabs.forEach(tab => tab.addEventListener('click', () => setView(tab.dataset.view)));
+    setView(lastView, false);
+    document.getElementById('mobileExportToggle').addEventListener('click', event => {
+        event.stopPropagation();
+        const opened = exportMenu.classList.toggle('open');
+        event.currentTarget.setAttribute('aria-expanded', String(opened));
+        guide.classList.remove('open');
+        document.getElementById('mobileGuideToggle').setAttribute('aria-expanded', 'false');
+    });
+    document.getElementById('mobileGuideToggle').addEventListener('click', event => {
+        event.stopPropagation();
+        const opened = guide.classList.toggle('open');
+        event.currentTarget.setAttribute('aria-expanded', String(opened));
+        exportMenu.classList.remove('open');
+        document.getElementById('mobileExportToggle').setAttribute('aria-expanded', 'false');
+    });
+    document.addEventListener('click', event => {
+        if (!event.target.closest('.mobile-popover')) {
+            exportMenu.classList.remove('open'); guide.classList.remove('open');
+            document.getElementById('mobileGuideToggle').setAttribute('aria-expanded', 'false');
+            document.getElementById('mobileExportToggle').setAttribute('aria-expanded', 'false');
+        }
+    });
+    document.addEventListener('keydown', event => {
+        if (event.key !== 'Escape') return;
+        exportMenu.classList.remove('open');guide.classList.remove('open');
+        body.classList.remove('mobile-palette-open');
+        paletteToggle.setAttribute('aria-expanded','false');
+        document.getElementById('mobileGuideToggle').setAttribute('aria-expanded', 'false');
+        document.getElementById('mobileExportToggle').setAttribute('aria-expanded', 'false');
+    });
+    paletteToggle.addEventListener('click', () => {
+        const open = body.classList.toggle('mobile-palette-open');
+        paletteToggle.setAttribute('aria-expanded', String(open));
+    });
+    function syncBrush() {
+        const special = toolbar.querySelector('.march-active,.security-active');
+        const selected = special || toolbar.querySelector('.paint-tool.active');
+        const icon = selected?.querySelector('.pt-icon');
+        paletteToggle.querySelector('.brush-dot').style.background = icon ? getComputedStyle(icon).backgroundColor : '#c0392b';
+        const name = selected?.title || 'إجازة';
+        paletteToggle.title = 'أدوات الدهان · ' + name;
+        paletteToggle.setAttribute('aria-label', 'أدوات الدهان، الفرشاة الحالية: ' + name);
+        toolbar.querySelectorAll('[data-custom=true]').forEach(btn => {
+            const label = btn.querySelector('.pt-label');
+            // Preserve the original desktop abbreviation. Full names on phones.
+            if (label) { const text = matchMedia('(max-width:768px)').matches ? btn.title : (btn.title.length > 5 ? btn.title.substring(0,5)+'…' : btn.title); if (label.textContent !== text) label.textContent = text; }
+        });
+    }
+    new MutationObserver(syncBrush).observe(toolbar, {subtree:true,childList:true,attributes:true,attributeFilter:['class']});
+    matchMedia('(max-width:768px)').addEventListener('change',syncBrush);
+    syncBrush();
+    const legendCopy = document.querySelector('.legend-bar').cloneNode(true);
+    guide.appendChild(legendCopy);
+    document.querySelectorAll('#mobileExport button').forEach(btn => btn.addEventListener('click', () => {
+        exportMenu.classList.remove('open');
+        document.getElementById('mobileExportToggle').setAttribute('aria-expanded','false');
+    }));
+});
+async function mobileExportPDF() {
+    document.body.classList.add('mobile-exporting');
+    try { await exportPDF(); } finally { document.body.classList.remove('mobile-exporting'); }
+}
+
+</script>
 </body>
-</html>
+    </html>
