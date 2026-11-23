@@ -1,7 +1,7 @@
 // برنامج التدريب — offline support
 // v3: network-first for same-origin (HTML/manifest/icons) so updates appear immediately;
 // cache-first only for third-party CDN assets.
-const CACHE = 'training-planner-v7';
+const CACHE = 'training-planner-v8';
 const PRECACHE = ['./', 'index.html', 'manifest.json', 'icon-192.png', 'icon-512.png'];
 
 self.addEventListener('install', e => {
