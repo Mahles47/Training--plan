@@ -1406,7 +1406,7 @@
     <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAIAAADdvvtQAAAC8klEQVR4nO3boW4UYRSA0S1B9QUI4NjgqENVgOkTgMWTVGJwNEgMsgkeC0+AAVFVVxyphIYXqEZss2lwO9+0O+2eo9bcmd3k63TEf7f+vHs0g6HurPsLcLMJiERAJAIiERCJgEgERCIgEgGRCIhEQCQCIhEQiYBIBEQiIBIBkQiIREAkAiIREImASAREIiCSrQe7r9b9HbjBPIFIBEQiIBIBkQiIREAkAiIREImASAREIiASAZEIiERAJAIiERCJgEgERCIgEgGRCIhEQCR3x7rQ8d7R4Nnz/ZPtwx2zVz37n6ffdvtFRtsLO947uv/+dNjs6d/z+b1ts1c9e9nZwXyUgEZ7Ai08fvN51ZFfHy8Kfvjy7aqzv798WHz4vvtk1dnnRz8XH84O5qvOLv9U1vV7p8M7EImASAREIiASAZEIiERAJAIiERCJgEgERCIgEgGRCIhEQCQCIhEQiYBIBEQiIJKRD9UvT4wPUE6ML0/IDzB4mWS2vt87HaOt9fz4+mmU63Btnr143S8y2hNo+3DHXtjEZy87O5jPZrdrL2xdO1blvmUfrdx3OrxEkwiIREAkAiIREImASAREIiASAZEIiERAJAIiERCJgEgERCIgEgGRCIhEQCQCIpnQXti6dqzKfcs+2gRPyA9gL2xz2QszO9xYe2HegUgERCIgEgGRCIhEQCQCIhEQiYBIBEQiIBIBkQiIREAkAiIREImASAREIiASAZEIiERAJPbCNpe9MLPD2QtjEgREIiASAZEIiERAJAIiERCJgEgERCIgEgGRCIhEQCQCIhEQiYBIBEQiIBIBkQiIREAk9sI2l70ws8PZC2MSBEQiIBIBkQiIREAkAiIREImASAREIiASAZEIiERAJAIiERCJgEgERCIgEgGRCIhEQCSjrfXMLjZFBtk/MXsds1dgtMVCNpN/YSQCIhEQiYBIBEQiIBIBkQiIREAkAiIREImASAREIiASAZEIiERAJAIiERCJgEgERCIgkn9R8eVE+/GbxAAAAABJRU5ErkJggg==">
 <style id="mobile-layout">/* Phone-only presentation layer. Training and export logic remains unchanged. */
 .mobile-only { display:none; }
-@media screen and (max-width:768px) {
+@media screen and (max-width:768px), screen and (pointer:coarse) and (max-height:600px) and (max-width:1200px) {
  :root { --toolbar-height:110px; }
  body { padding-bottom:82px; }
  .topbar { height:110px; padding:10px 12px; gap:8px; background:linear-gradient(145deg,#172536,#111a25); border-bottom-color:#2d4054; box-shadow:0 8px 30px #0003; }
@@ -1486,8 +1486,8 @@
 }
 @media screen and (min-width:769px) { .generate-phone {display:none;} }
 @media print { .mobile-only {display:none!important;} }
-@media screen and (max-width:768px) {body.mobile-exporting #exportArea,body.mobile-exporting .hours-section {display:block!important;}}
-@media screen and (max-width:768px) {
+@media screen and (max-width:768px), screen and (pointer:coarse) and (max-height:600px) and (max-width:1200px) {body.mobile-exporting #exportArea,body.mobile-exporting .hours-section {display:block!important;}}
+@media screen and (max-width:768px), screen and (pointer:coarse) and (max-height:600px) and (max-width:1200px) {
  .topbar-brand .brand-icon {font-size:0;position:relative;background:linear-gradient(145deg,#398df6,#2548a0);box-shadow:inset 0 1px 0 #ffffff30;}
  .topbar-brand .brand-icon::before {content:'';width:15px;height:15px;border:1.5px solid #e3f0ff;border-radius:5px;box-shadow:inset 0 4px 0 #e3f0ff35;}
  .topbar-brand .brand-icon::after {content:'';position:absolute;width:3px;height:3px;background:#dbeeff;box-shadow:5px 0 #dbeeff,0 5px #dbeeff,5px 5px #dbeeff;top:12px;left:10px;border-radius:1px;}
@@ -1495,13 +1495,13 @@
  .mobile-tabs .tab-icon {font-family:Arial,sans-serif;}
  .mobile-export-label {direction:rtl;}
 }
-@media screen and (max-width:768px) {
+@media screen and (max-width:768px), screen and (pointer:coarse) and (max-height:600px) and (max-width:1200px) {
  .topbar-controls>.primary {font-size:0;}
  .topbar-controls>.primary::before {content:'▶';font-family:Arial,sans-serif;font-size:22px;color:#fff;}
  .topbar-controls>.primary .btn-text {display:none;}
 }
 /* Refined phone palette: ink, sapphire, champagne and jade. */
-@media screen and (max-width:768px) {
+@media screen and (max-width:768px), screen and (pointer:coarse) and (max-height:600px) and (max-width:1200px) {
  body {background:radial-gradient(ellipse at 85% 8%,#162c482b,transparent 45%),#090f18;}
  .topbar {background:linear-gradient(120deg,#172638 0%,#112034 58%,#192d46 100%);border-bottom:1px solid #5a7c9e35;box-shadow:0 8px 30px #02070e66,inset 0 1px 0 #ffffff09;}
  .topbar-brand h1 {color:#f2f5fb;text-shadow:0 1px 8px #ffffff0c;}
@@ -1532,16 +1532,115 @@
  .paint-tool.active {border-color:#bddefa;background:linear-gradient(150deg,#4b70922b,#aac8e818);box-shadow:inset 0 0 12px #9bc7f010;}
  .mobile-popover {background:linear-gradient(140deg,#263b55,#17283e);border-color:#89afd25c;box-shadow:inset 0 1px 0 #dceeff12,0 14px 40px #0009;}
 }
-@media screen and (max-width:768px) {
+@media screen and (max-width:768px), screen and (pointer:coarse) and (max-height:600px) and (max-width:1200px) {
  .topbar-controls>.primary::before {content:'◀';transform:translateX(-1px);}
 }
 </style>
-</head>
+<style>/* Landscape workspace, preview only. */
+@media screen and (max-width:768px), screen and (pointer:coarse) and (max-height:600px) and (max-width:1200px) {
+ body:not(.mobile-working) #exportArea,body:not(.mobile-working) .hours-section,body:not(.mobile-working) .mobile-view-note,body:not(.mobile-working) .topbar-controls,body:not(.mobile-working) .mobile-palette-toggle,body:not(.mobile-working) .paint-toolbar {display:none!important;}
+ body:not(.mobile-working) .topbar {height:64px;}
+ body:not(.mobile-working) .main-content {margin-top:64px;}
+ body:not(.mobile-working) .stats-row {top:64px;}
+ body:not(.mobile-working) .mobile-tabs {margin-top:28px;gap:12px;}
+ body:not(.mobile-working) .mobile-tab {height:140px;flex-direction:column;font-size:14px;gap:16px;border-radius:22px;}
+ body:not(.mobile-working) .mobile-tab .tab-icon {font-size:36px;}
+ .mobile-home-intro {display:block;margin:26px 4px 0;}
+ .mobile-home-intro h2 {font-size:23px;color:#e9f2ff;margin-bottom:6px;}
+ .mobile-home-intro p {font-size:12px;color:#8fa5bf;line-height:1.9;}
+ .mobile-home-footer {display:flex;align-items:center;justify-content:center;gap:8px;margin-top:20px;font-size:11px;color:#7c94b0;}
+ .mobile-home-footer .tiny-status {width:5px;height:5px;border-radius:50%;background:#89d6bd;box-shadow:0 0 9px #89d6bd50;}
+ .mobile-working .mobile-home-intro,.mobile-working .mobile-home-footer,.mobile-working .mobile-tabs,.mobile-working .stats-row,.mobile-working .mobile-view-note {display:none!important;}
+ .workspace-back {display:none;}
+ .mobile-working .workspace-back {display:flex;gap:7px;align-items:center;color:#d6e8ff;background:#1c314b;border:1px solid #7fa3cc3b;border-radius:10px;height:36px;padding:0 11px;font:12px 'Cairo',sans-serif;}
+ .rotate-overlay {display:none;}
+ .mobile-working .rotate-overlay {position:fixed;inset:0;z-index:1500;background:radial-gradient(ellipse at 50% 40%,#244a763b,transparent 65%),#0c1624;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:30px;text-align:center;}
+ .rotate-phone-icon {position:relative;width:54px;height:90px;border:2px solid #a0ccff;border-radius:12px;background:linear-gradient(145deg,#2b4c73,#142840);box-shadow:0 0 50px #408fea22,inset 0 1px 0 #d2e8ff30;margin:10px 0 36px;animation:rotateHint 2.8s ease-in-out infinite;}
+ .rotate-phone-icon::after {content:'';position:absolute;width:16px;height:3px;background:#badbff;bottom:7px;left:17px;border-radius:4px;}
+ .rotate-overlay h2 {font-size:23px;margin-bottom:12px;color:#edf5ff;}
+ .rotate-overlay p {color:#9cb3ce;font-size:13px;max-width:280px;line-height:2;}
+ .rotate-view-badge {margin-top:22px;color:#a5cfff;background:#213a58;border:1px solid #82b8ef38;padding:6px 17px;border-radius:20px;font-size:12px;}
+ .rotate-back {position:absolute;top:calc(18px + env(safe-area-inset-top,0px));right:18px;color:#b7d2f2;border:1px solid #698bb03f;background:#1b2b40;border-radius:11px;padding:9px 14px;font:12px 'Cairo',sans-serif;}
+ .mobile-working .mobile-palette-toggle {bottom:calc(10px + env(safe-area-inset-bottom,0px));}
+ .mobile-working .paint-toolbar {bottom:calc(10px + env(safe-area-inset-bottom,0px));}
+}
+@keyframes rotateHint {0%,12% {transform:rotate(0)}45%,75% {transform:rotate(-90deg)}100% {transform:rotate(0)}}
+@media screen and (orientation:landscape) and (pointer:coarse) and (max-height:600px) and (max-width:1200px) {
+ .mobile-working .rotate-overlay {display:none!important;}
+ .mobile-working .topbar {height:60px;padding:8px 12px;display:flex;flex-direction:row;gap:10px;align-items:center;justify-content:space-between;}
+ .mobile-working .topbar-brand {width:auto;min-width:0;gap:8px;flex-shrink:1;}
+ .mobile-working .topbar-brand h1,.mobile-working .topbar-brand .brand-icon,.mobile-working #mobileGuideToggle {display:none;}
+ .mobile-working .mobile-header-actions {margin:0;}
+ .mobile-working .topbar-controls {display:flex;width:auto;height:40px;flex:1;max-width:390px;}
+ .mobile-working[data-mobile-view=hours] .topbar-controls {display:none;}
+ .mobile-working .main-content {margin-top:60px;padding:8px 10px 85px;}
+ .mobile-working .calendar-wrapper {margin:0;}
+ .mobile-working .hours-header {display:none;}
+ .mobile-working .hours-section {margin:0;}
+ .workspace-title {display:flex!important;align-items:center;gap:8px;font-size:12px;color:#b9d3f3;white-space:nowrap;}
+ .mobile-working .mobile-palette-toggle {width:44px;height:44px;border-radius:13px;opacity:.96;}
+ .mobile-working .paint-toolbar {left:64px;min-height:66px;}
+ .mobile-working .topbar .mobile-popover {top:60px;}
+ body:not(.mobile-working) .mobile-tabs {max-width:520px;margin:18px auto 0;}
+ body:not(.mobile-working) .mobile-tab {height:100px;}
+ body:not(.mobile-working) .mobile-home-intro {margin:18px 0 0;text-align:center;}
+ body:not(.mobile-working) .mobile-home-intro h2 {font-size:20px;}
+ body:not(.mobile-working) .mobile-home-footer {margin-top:12px;}
+}
+.workspace-title {display:none;}
+@media screen and (min-width:769px) and (pointer:fine) { .rotate-overlay,.workspace-back,.mobile-home-intro,.mobile-home-footer,.workspace-title {display:none!important;} }
+@media (prefers-reduced-motion:reduce) {.rotate-phone-icon {animation:none;transform:rotate(-90deg);}}
+@media print {.rotate-overlay,.workspace-back,.mobile-home-intro,.mobile-home-footer,.workspace-title {display:none!important;}}
+@media screen and (orientation:landscape) and (pointer:coarse) and (max-height:600px) and (max-width:1200px) {
+ .workspace-title {display:flex!important;}
+}
+@media screen and (max-width:768px), screen and (pointer:coarse) and (max-height:600px) and (max-width:1200px) {
+ body.mobile-exporting:not(.mobile-working) #exportArea,body.mobile-exporting:not(.mobile-working) .hours-section {display:block!important;}
+ .rotate-overlay h2 {font-size:22px;}
+}
+</style>
+<style id="fixed-palette">/* Always-visible phone agenda palette. Desktop remains untouched. */
+@media screen and (max-width:768px), screen and (pointer:coarse) and (max-height:600px) and (max-width:1200px) {
+ .mobile-palette-toggle {display:none!important;}
+ body[data-mobile-view=agenda] .paint-toolbar,body.mobile-palette-open[data-mobile-view=agenda] .paint-toolbar {display:flex;position:fixed;left:8px;right:8px;bottom:calc(8px + env(safe-area-inset-bottom,0px));width:auto;max-width:none;min-height:62px;box-sizing:border-box;padding:5px 7px;gap:5px;border-radius:17px;border:1px solid #b1cfe63d;background:linear-gradient(115deg,#263f57ed,#162a40f0);box-shadow:inset 0 1px 0 #e9f5ff15,0 5px 22px #0007;backdrop-filter:blur(24px);transform:none;opacity:1;visibility:visible;pointer-events:auto;clip-path:none;transition:none;overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;touch-action:pan-x;}
+ .paint-toolbar>* {flex-shrink:0;transition:none!important;animation:none!important;}
+ .paint-toolbar .paint-tool,.paint-toolbar .paint-add-btn {min-height:48px;padding:4px 9px;border-radius:11px;gap:2px;}
+ .paint-toolbar .paint-tool .pt-icon,.paint-toolbar .paint-add-btn .pt-icon {width:18px;height:18px;border-radius:6px;font-size:11px;}
+ .paint-toolbar .pt-label {font-size:10px!important;line-height:1.6;color:#c2d3e4;}
+ .paint-toolbar .paint-tool.active {border-color:#c4e3ff;background:linear-gradient(130deg,#729cc24a,#aacdeb20);box-shadow:inset 0 0 0 1px #e1f2ff10;}
+ .paint-toolbar .paint-tool.active .pt-label {color:#f0f7ff;}
+ .paint-toolbar .paint-mode-toggle {position:sticky;right:0;z-index:2;min-height:42px;padding:7px 10px;font-size:10px;background:#172a40;border:1px solid #7796b34d;box-shadow:-7px 0 12px #182d43dd;}
+ .paint-toolbar .paint-mode-toggle.active {background:#24496c;border-color:#9ac9f6;color:#e2f2ff;}
+ .paint-toolbar .paint-divider {height:25px;background:#a6c3da33;}
+ body[data-mobile-view=agenda] .main-content {padding-bottom:calc(94px + env(safe-area-inset-bottom,0px));}
+ body[data-mobile-view=hours] .paint-toolbar {display:none!important;}
+ .toast {bottom:100px;}
+}
+@media screen and (orientation:landscape) and (pointer:coarse) and (max-height:600px) and (max-width:1200px) {
+ body[data-mobile-view=agenda] .paint-toolbar {left:8px;right:8px;bottom:calc(5px + env(safe-area-inset-bottom,0px));min-height:54px;padding:3px 7px;border-radius:14px;gap:5px;}
+ .paint-toolbar .paint-tool,.paint-toolbar .paint-add-btn {min-height:44px;padding:3px 10px;gap:1px;}
+ .paint-toolbar .paint-mode-toggle {min-height:40px;}
+ body[data-mobile-view=agenda] .main-content {padding-bottom:calc(77px + env(safe-area-inset-bottom,0px));}
+}
+@media screen and (max-width:768px), screen and (pointer:coarse) and (max-height:600px) and (max-width:1200px) {
+ body.fixed-agenda-frame:not(.mobile-exporting) {overflow:hidden;height:100dvh;box-sizing:border-box;padding-bottom:0;}
+ body.fixed-agenda-frame:not(.mobile-exporting) .main-content {padding-bottom:0;}
+ body.fixed-agenda-frame:not(.mobile-exporting) #exportArea {height:calc(100dvh - var(--agenda-top,273px) - 80px - env(safe-area-inset-bottom,0px));max-height:calc(100dvh - var(--agenda-top,273px) - 80px - env(safe-area-inset-bottom,0px));overflow:auto;overscroll-behavior:contain;scroll-behavior:auto;box-sizing:border-box;margin-bottom:0;}
+ body.mobile-exporting #exportArea {height:auto!important;max-height:none!important;overflow:visible!important;}
+}
+@media screen and (orientation:landscape) and (pointer:coarse) and (max-height:600px) and (max-width:1200px) {
+ body.fixed-agenda-frame:not(.mobile-exporting) #exportArea {height:calc(100dvh - var(--agenda-top,68px) - 67px - env(safe-area-inset-bottom,0px));max-height:calc(100dvh - var(--agenda-top,68px) - 67px - env(safe-area-inset-bottom,0px));}
+}
+/* Workspace identity is clear from the table, keep its header uncluttered. */
+@media screen and (orientation:landscape) and (pointer:coarse) and (max-height:600px) and (max-width:1200px) {
+ .mobile-working .workspace-title {display:none!important;}
+}
+</style></head>
 <body>
 
 <!-- TOP BAR -->
 <div class="topbar">
-    <div class="topbar-brand">
+    <div class="topbar-brand"><button class="workspace-back mobile-only" data-workspace-back>› <span>رجوع</span></button><span class="workspace-title mobile-only" id="workspaceTitle">الأجندة</span>
         <div class="brand-icon">🎯</div>
         <h1>برنامج التدريب</h1>
 <div class="mobile-header-actions mobile-only"><button id="mobileGuideToggle" class="mobile-icon-btn mobile-help" aria-label="دليل الألوان" aria-expanded="false" aria-controls="mobileGuide">؟</button><button id="mobileExportToggle" class="mobile-icon-btn" aria-expanded="false" aria-controls="mobileExport">↗ <span>تصدير</span></button></div>
@@ -1591,10 +1690,10 @@
         </div>
     </div>
 
-<div class="mobile-tabs mobile-only" role="tablist" aria-label="عرض التدريب">
+<div class="mobile-home-intro mobile-only"><h2>خطتك، في مكان واحد.</h2><p>اختر مساحة العمل. اقلب الموبايل للعرض<br>وشوف الأجندة والجدول بمساحتهم الكاملة.</p></div><div class="mobile-tabs mobile-only" role="tablist" aria-label="عرض التدريب">
 <button class="mobile-tab" id="agendaTab" role="tab" aria-controls="exportArea" data-view="agenda" aria-selected="true"><span class="tab-icon">▦</span><span>الأجندة</span></button>
 <button class="mobile-tab" id="hoursTab" role="tab" aria-controls="hoursSection" data-view="hours" aria-selected="false"><span class="tab-icon">▥</span><span>جدول ربط الساعات</span></button>
-</div><div class="mobile-view-note mobile-only"><strong id="mobileViewTitle">الأجندة الكاملة</strong><span>اسحب الجدول يمينًا ويسارًا ↔</span></div>
+</div><div class="mobile-home-footer mobile-only"><span class="tiny-status"></span>تعديلات الأجندة تنعكس في جدول الساعات</div><div class="mobile-view-note mobile-only"><strong id="mobileViewTitle">الأجندة الكاملة</strong><span>اسحب الجدول يمينًا ويسارًا ↔</span></div>
     <!-- LEGEND -->
     <div class="legend-bar">
         <div class="legend-item"><div class="legend-dot" style="background:var(--col-normal);border:1px solid var(--border)"></div><span>تدريب عادي</span></div>
@@ -1667,6 +1766,7 @@
 <div id="mobileExport" class="mobile-popover mobile-only"><button onclick="mobileExportPDF()">📄 <span>تصدير PDF</span></button><button onclick="exportExcel()">📊 <span>تصدير Excel</span></button></div>
 <div id="mobileGuide" class="mobile-popover mobile-only" aria-label="دليل الألوان"></div>
 <button id="mobilePaletteToggle" class="mobile-palette-toggle mobile-only" aria-label="أدوات الدهان" aria-expanded="false"><span class="brush-dot"></span><span class="palette-chevron">›</span></button>
+<div class="rotate-overlay mobile-only" role="dialog" aria-label="اقلب الموبايل للعرض"><button class="rotate-back" data-workspace-back>› رجوع</button><div class="rotate-phone-icon" aria-hidden="true"></div><h2>مساحة أكبر لخطتك</h2><p>اقلب الموبايل للعرض<br>عشان تشتغل على الجدول براحتك.</p><span class="rotate-view-badge" id="rotateViewName">الأجندة</span></div>
 <!-- PAINT TOOLBAR -->
 <div class="paint-toolbar">
     <span class="paint-label">🎨 وضع الدهان</span>
@@ -3415,7 +3515,7 @@ document.addEventListener('DOMContentLoaded', () => {
         toolbar.querySelectorAll('[data-custom=true]').forEach(btn => {
             const label = btn.querySelector('.pt-label');
             // Preserve the original desktop abbreviation. Full names on phones.
-            if (label) { const text = matchMedia('(max-width:768px)').matches ? btn.title : (btn.title.length > 5 ? btn.title.substring(0,5)+'…' : btn.title); if (label.textContent !== text) label.textContent = text; }
+            if (label) { const text = matchMedia('(max-width:768px), (pointer:coarse) and (max-height:600px) and (max-width:1200px)').matches ? btn.title : (btn.title.length > 5 ? btn.title.substring(0,5)+'…' : btn.title); if (label.textContent !== text) label.textContent = text; }
         });
     }
     new MutationObserver(syncBrush).observe(toolbar, {subtree:true,childList:true,attributes:true,attributeFilter:['class']});
@@ -3434,5 +3534,71 @@ async function mobileExportPDF() {
 }
 
 </script>
-</body>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+ const body=document.body;
+ const phone=matchMedia('(max-width:768px), (pointer:coarse) and (max-height:600px) and (max-width:1200px)');
+ const rotateName=document.getElementById('rotateViewName');
+ const title=document.getElementById('workspaceTitle');
+ let enteredFullscreen=false;
+ function isInstalled(){return matchMedia('(display-mode:standalone)').matches || navigator.standalone===true;}
+ async function tryLandscape(){
+  if(!isInstalled())return;
+  try {
+   if(!document.fullscreenElement && document.documentElement.requestFullscreen) {
+    await document.documentElement.requestFullscreen();enteredFullscreen=true;
+   }
+   if(screen.orientation?.lock)await screen.orientation.lock('landscape');
+  } catch(_) { /* Rotation help remains usable when a platform declines. */ }
+ }
+ document.querySelectorAll('.mobile-tab').forEach(tab=>tab.addEventListener('click',()=>{
+  if(!phone.matches)return;
+  body.classList.add('mobile-working');
+  const label=tab.dataset.view==='hours'?'جدول ربط الساعات':'الأجندة';
+  rotateName.textContent=label;title.textContent=label;
+  window.scrollTo(0,0);
+  tryLandscape();
+ }));
+ async function back(){
+  body.classList.remove('mobile-working','mobile-palette-open');
+  document.getElementById('mobilePaletteToggle').setAttribute('aria-expanded','false');
+  try{screen.orientation?.unlock?.();}catch(_){}
+  if(enteredFullscreen && document.fullscreenElement){try{await document.exitFullscreen();}catch(_){} }
+  enteredFullscreen=false;
+  window.scrollTo(0,0);
+ }
+ document.querySelectorAll('[data-workspace-back]').forEach(btn=>btn.addEventListener('click',back));
+ document.addEventListener('keydown',e=>{if(e.key==='Escape' && body.classList.contains('mobile-working'))back();});
+ phone.addEventListener('change',()=>{if(!phone.matches)back();});
+});
+
+</script>
+<script>document.addEventListener('DOMContentLoaded',()=>{
+ const bar=document.querySelector('.paint-toolbar');
+ const phone=matchMedia('(max-width:768px), (pointer:coarse) and (max-height:600px) and (max-width:1200px)');
+ const original=new WeakMap();
+ const names={holiday:'إجازة',ops:'مهمة عمليات',exam:'تقييم واختبار',erase:'مسح'};
+ function sync(){
+  bar.inert=false;bar.removeAttribute('aria-hidden');
+  bar.querySelectorAll('.paint-tool,.paint-add-btn').forEach(btn=>{
+   const label=btn.querySelector('.pt-label');if(!label)return;
+   if(!original.has(label))original.set(label,label.textContent);
+   const text=phone.matches?(btn.dataset.custom==='true'?btn.title:names[btn.dataset.type]||(btn.id==='marchModeBtn'?'طابور السير':btn.id==='securityThursdayBtn'?'أمن الخميس':original.get(label))):original.get(label);
+   if(label.textContent!==text)label.textContent=text;
+  });
+ }
+ sync();new MutationObserver(sync).observe(bar,{childList:true,subtree:true});phone.addEventListener('change',sync);
+});
+document.addEventListener('DOMContentLoaded',()=>{
+ const body=document.body,area=document.getElementById('exportArea');
+ const media=matchMedia('(max-width:768px), (pointer:coarse) and (max-height:600px) and (max-width:1200px)');
+ let pending=false;
+ function frame(){pending=false;const active=media.matches&&body.dataset.mobileView==='agenda'&&getComputedStyle(area).display!=='none';
+ if(body.classList.contains('fixed-agenda-frame')!==active)body.classList.toggle('fixed-agenda-frame',active);
+ if(active){window.scrollTo(0,0);area.style.setProperty('--agenda-top',Math.round(area.getBoundingClientRect().top)+'px');}}
+ function queue(){if(!pending){pending=true;requestAnimationFrame(frame);}}
+ new MutationObserver(queue).observe(body,{attributes:true,attributeFilter:['class','data-mobile-view']});
+ window.addEventListener('resize',queue);media.addEventListener('change',queue);new ResizeObserver(queue).observe(document.querySelector('.topbar'));queue();document.fonts.ready.then(queue);
+});
+</script></body>
     </html>
