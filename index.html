@@ -1635,6 +1635,18 @@
 @media screen and (orientation:landscape) and (pointer:coarse) and (max-height:600px) and (max-width:1200px) {
  .mobile-working .workspace-title {display:none!important;}
 }
+</style><style id="mobile-home-toast">
+/* Keep phone home focused on its two workspace cards. */
+@media screen and (max-width:768px), screen and (pointer:coarse) and (max-height:600px) and (max-width:1200px) {
+ .mobile-home-intro {display:none!important;}
+ .mobile-working .rotate-overlay {display:none!important;}
+ .rotation-toast {position:fixed;top:calc(74px + env(safe-area-inset-top,0px));bottom:auto;left:50%;width:max-content;max-width:calc(100vw - 32px);box-sizing:border-box;transform:translate(-50%,-8px);padding:11px 17px;border-radius:13px;border:1px solid #a8c9eb40;background:#20364ded;color:#e3efff;box-shadow:0 7px 26px #0005;backdrop-filter:blur(18px);font:12px/1.9 'Cairo',sans-serif;text-align:center;z-index:2001;pointer-events:none;opacity:0;visibility:hidden;transition:opacity .2s,transform .2s,visibility .2s;}
+ .rotation-toast.show {opacity:1;visibility:visible;transform:translate(-50%,0);}
+}
+.rotation-toast {display:none;}
+@media screen and (max-width:768px), screen and (pointer:coarse) and (max-height:600px) and (max-width:1200px) {.rotation-toast {display:block;}}
+@media (prefers-reduced-motion:reduce) {.rotation-toast {transition:none;}}
+@media print {.rotation-toast {display:none!important;}}
 </style></head>
 <body>
 
@@ -1836,6 +1848,7 @@
 
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
+<div class="rotation-toast" id="rotationToast" role="status" aria-live="polite" aria-atomic="true"></div>
 
 <script>
     // ======================== STATE ========================
@@ -3541,6 +3554,15 @@ document.addEventListener('DOMContentLoaded', () => {
  const rotateName=document.getElementById('rotateViewName');
  const title=document.getElementById('workspaceTitle');
  let enteredFullscreen=false;
+ const rotationToast=document.getElementById('rotationToast');
+ let rotationToastTimer;
+ function hideRotationToast(){clearTimeout(rotationToastTimer);rotationToast.classList.remove('show');rotationToast.textContent='';}
+ function showRotationToast(){
+  clearTimeout(rotationToastTimer);
+  rotationToast.textContent='اقلب الموبايل للعرض وشوف الاجنده والجدول بمساحتهم الكامله';
+  rotationToast.classList.add('show');
+  rotationToastTimer=setTimeout(hideRotationToast,4200);
+ }
  function isInstalled(){return matchMedia('(display-mode:standalone)').matches || navigator.standalone===true;}
  async function tryLandscape(){
   if(!isInstalled())return;
@@ -3557,9 +3579,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const label=tab.dataset.view==='hours'?'جدول ربط الساعات':'الأجندة';
   rotateName.textContent=label;title.textContent=label;
   window.scrollTo(0,0);
+  showRotationToast();
   tryLandscape();
  }));
  async function back(){
+  hideRotationToast();
   body.classList.remove('mobile-working','mobile-palette-open');
   document.getElementById('mobilePaletteToggle').setAttribute('aria-expanded','false');
   try{screen.orientation?.unlock?.();}catch(_){}
@@ -3601,4 +3625,4 @@ document.addEventListener('DOMContentLoaded',()=>{
  window.addEventListener('resize',queue);media.addEventListener('change',queue);new ResizeObserver(queue).observe(document.querySelector('.topbar'));queue();document.fonts.ready.then(queue);
 });
 </script></body>
-    </html>
+            </html>
